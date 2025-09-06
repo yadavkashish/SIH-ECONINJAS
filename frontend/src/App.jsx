@@ -5,7 +5,6 @@ import Sidebar from "./components/Sidebar";
 // Pages
 import Home from "./pages/Home";
 import Account from "./pages/Account";
-import BuyAndSell from "./pages/Buy&Sell";
 import Communities from "./pages/Communities";
 import Complaints from "./pages/Complaints";
 import Map from "./pages/Map";
@@ -19,6 +18,9 @@ import PledgePage from "./pages/PledgePage";
 import FinalQuizPage from "./pages/FinalQuizPage";
 import CertificationPage from "./pages/CertificationPage";
 import { ProgressProvider } from "./context/ProgressContent";
+import BuySell from "./pages/BuySell";
+import BuyPage from "./pages/BuyPage";
+import SellPage from "./pages/SellPage";
 
 export default function App() {
   return (
@@ -30,10 +32,12 @@ export default function App() {
           {/* Main Pages */}
           <Route path="/" element={<Home />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/buyandsell" element={<BuyAndSell />} />
+          <Route path="/buyandsell" element={<BuySell />} />
           <Route path="/communities" element={<Communities />} />
           <Route path="/complaints" element={<Complaints />} />
           <Route path="/map" element={<Map />} />
+          <Route path="/buy" element={<BuyPage />} />
+          <Route path="/sell" element={<SellPage />} />
 
           {/* Modules */}
           <Route path="/modules" element={<Modules />} />
