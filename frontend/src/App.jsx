@@ -1,36 +1,64 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
-import Sidebar from './components/Sidebar';
-import Account from './pages/Account';
-import BuyAndSell from './pages/Buy&Sell';
-import Communities from './pages/Communities';
-import Complaints from './pages/Complaints';
-import Home from './pages/Home';
-import Map from './pages/Map';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
 
+// Pages
+import Home from "./pages/Home";
+import Account from "./pages/Account";
+import BuyAndSell from "./pages/Buy&Sell";
+import Communities from "./pages/Communities";
+import Complaints from "./pages/Complaints";
+import Map from "./pages/Map";
 
-
-
-
-
-
-
+import Modules from "./pages/Modules";
+import VideoPage from "./pages/VideoPage";
+import ContentPage from "./pages/ContentPage";
+import QuizPage from "./pages/QuizPage";
+import ActivityPage from "./pages/ActivityPage";
+import PledgePage from "./pages/PledgePage";
+import FinalQuizPage from "./pages/FinalQuizPage";
+import CertificationPage from "./pages/CertificationPage";
+import { ProgressProvider } from "./context/ProgressContent";
 
 export default function App() {
   return (
     <Router>
+      <ProgressProvider >
       <Sidebar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/buyandsell" element={<BuyAndSell />} />
-        <Route path="/communities" element={<Communities/>} />
-        <Route path="/complaints" element={<Complaints />} />
-        <Route path="/map" element={<Map />} />
-        
+      <main className="ml-64 flex-1 p-6 bg-gray-50 min-h-screen">
+        <Routes>
+          {/* Main Pages */}
+          <Route path="/" element={<Home />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/buyandsell" element={<BuyAndSell />} />
+          <Route path="/communities" element={<Communities />} />
+          <Route path="/complaints" element={<Complaints />} />
+          <Route path="/map" element={<Map />} />
 
-        {/* <Route path="/redeem" element={<Redeem />} /> */}
-      </Routes>
+          {/* Modules */}
+          <Route path="/modules" element={<Modules />} />
+
+          {/* Module Sections */}
+          <Route path="/video/:moduleId" element={<VideoPage />} />
+          <Route path="/content/:moduleId" element={<ContentPage />} />
+          <Route path="/quiz/:moduleId" element={<QuizPage />} />
+          <Route path="/activity/:moduleId" element={<ActivityPage />} />
+          <Route path="/pledge/:moduleId" element={<PledgePage />} />
+          <Route path="/quiz/final" element={<FinalQuizPage />} />
+          <Route path="/certificate" element={<CertificationPage />} />
+
+          {/* Optional: Catch all route */}
+          <Route
+            path="*"
+            element={
+              <div className="p-6 text-center">
+                <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
+              </div>
+            }
+          />
+        </Routes>
+      </main>
+      </ProgressProvider>
     </Router>
   );
 }
