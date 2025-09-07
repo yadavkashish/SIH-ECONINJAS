@@ -8,6 +8,7 @@ import Account from "./pages/Account";
 import Communities from "./pages/Communities";
 import Complaints from "./pages/Complaints";
 import Map from "./pages/Map";
+import Tracking from "./pages/Tracking"
 
 import Modules from "./pages/Modules";
 import VideoPage from "./pages/VideoPage";
@@ -50,7 +51,7 @@ export default function App() {
           <Route path="/pledge/:moduleId" element={<PledgePage />} />
           <Route path="/quiz/final" element={<FinalQuizPage />} />
           <Route path="/certificate" element={<CertificationPage />} />
-
+           <Route path="/tracking" element={<Tracking />} />
           {/* Optional: Catch all route */}
           <Route
             path="*"

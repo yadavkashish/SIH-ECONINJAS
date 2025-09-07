@@ -1,4 +1,32 @@
-export default function Tracking() {
-  return( 
-  <div className="ml-64 p-10 text-2xl font-semibold">Complaints Page</div>
-)}
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+function Tracking() {
+  const [locations, setLocations] = useState([]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const res = await fetch("http://localhost:5000/api/locations");
+      const data = await res.json();
+      setLocations(data);
+    };
+
+    fetchLocations();
+    const interval = setInterval(fetchLocations, 3000); // update every 3s
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <MapContainer center={[20, 78]} zoom={5} style={{ height: "500px" }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {locations.map((loc) => (
+        <Marker key={loc.deviceId} position={[loc.latitude, loc.longitude]}>
+          <Popup>{`Device: ${loc.deviceId}`}</Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+}
+
+export default Tracking;
