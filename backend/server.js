@@ -5,43 +5,12 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "cloudinary";
 import nodemailer from "nodemailer";
-import mongoose from "mongoose";
 import axios from "axios";
-
-
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-mongoose.connect("mongodb+srv://kashish9559:hjeo7iSBpCu9A96g@cluster0.hak872e.mongodb.net/sih?retryWrites=true&w=majority&appName=Cluster0");
-
-const locationSchema = new mongoose.Schema({
-  deviceId: String,
-  latitude: Number,
-  longitude: Number,
-  timestamp: { type: Date, default: Date.now },
-});
-
-const Location = mongoose.model("Location", locationSchema);
-app.post("/api/location", async (req, res) => {
-  const { deviceId, latitude, longitude } = req.body;
-
-  await Location.findOneAndUpdate(
-    { deviceId },
-    { latitude, longitude, timestamp: new Date() },
-    { upsert: true }
-  );
-
-  res.json({ success: true });
-});
-
-// Endpoint to get all latest locations
-app.get("/api/locations", async (req, res) => {
-  const locations = await Location.find({});
-  res.json(locations);
-});
 
 // Configure Cloudinary
 cloudinary.v2.config({
