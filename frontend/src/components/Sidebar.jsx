@@ -42,7 +42,7 @@ export default function Sidebar() {
           Modules
         </NavLink>
          <NavLink
-          to="communities/"
+          to="/communities"
           end
           className={({ isActive }) =>
             `px-3 py-2 rounded-md transition ${

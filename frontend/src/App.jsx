@@ -5,7 +5,6 @@ import Sidebar from "./components/Sidebar";
 // Pages
 import Home from "./pages/Home";
 import Account from "./pages/Account";
-import Communities from "./pages/Communities";
 import Complaints from "./pages/Complaints";
 import Map from "./pages/Map";
 
@@ -21,6 +20,8 @@ import { ProgressProvider } from "./context/ProgressContent";
 import BuySell from "./pages/BuySell";
 import BuyPage from "./pages/BuyPage";
 import SellPage from "./pages/SellPage";
+import CommunityPage from "./pages/CommunityPage";
+import Communities from "./pages/Communities";
 
 export default function App() {
   return (
@@ -33,7 +34,9 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/account" element={<Account />} />
           <Route path="/buyandsell" element={<BuySell />} />
+          <Route path="/buyandsell" element={<BuySell />} />
           <Route path="/communities" element={<Communities />} />
+          <Route path="/community/:id" element={<CommunityPage />} />
           <Route path="/complaints" element={<Complaints />} />
           <Route path="/map" element={<Map />} />
           <Route path="/buy" element={<BuyPage />} />
