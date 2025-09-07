@@ -1,113 +1,129 @@
 import { useState } from "react";
+import axios from "axios";
 
-export default function Complaints() {
-  const [formData, setFormData] = useState({
-    address: "",
-    description: "",
-    image: null,
-  });
+function Complaints() {
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [location, setLocation] = useState({ lat: null, lon: null });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      setFormData({ ...formData, image: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  // Get user location
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported in your browser");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.error(err);
+        alert("Failed to get location");
+      }
+    );
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!description || !image) {
+      alert("Please enter description and upload an image.");
+      return;
+    }
+
+    setLoading(true);
+    setStatus("");
+
+    try {
+      const formData = new FormData();
+      formData.append("description", description);
+      formData.append("image", image);
+      if (location.lat && location.lon) {
+        formData.append("latitude", location.lat);
+        formData.append("longitude", location.lon);
+      }
+
+      const res = await axios.post("http://localhost:5000/api/complaints", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setStatus("✅ Complaint submitted successfully!");
+      console.log("Response:", res.data);
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Failed to submit complaint.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const clearFile = () => {
-    setFormData({ ...formData, image: null });
-    //reset native file input so same file can be chosen again
-    const input = document.getElementById("imageUpload");
-    if (input) input.value = "";
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Complaint submitted: ", formData);
-
-    alert("Complaint submitted successfully!");
-    setFormData({ address: "", description: "", image: null });
-  };
-
   return (
-    <div className="ml-64 p-10">
-      <h1 className="text-3xl font-bold mb-6">Submit a Complaint</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-2xl p-6 max-w-lg space-y-4"
-      >
-        {/* Address */}
-        <div>
-          <label className="block font-medium mb-1">Complaint Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Enter the location"
-            className="w-full border rounded-lg p-2 focus:ring focus:ring-green-400"
-            required
-          ></input>
-        </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center">Submit a Complaint</h1>
 
-        {/* Description */}
-        <div>
-          <label className="block font-medium mb-1">Description</label>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Add a brief description"
-            rows="4"
-            className="w-full border rounded-lg p-2 focus:ring focus:ring-green-400"
-            required
-          ></textarea>
-        </div>
+            className="w-full border rounded-lg p-3"
+            rows="3"
+            placeholder="Describe the issue..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-        {/* Image Upload */}
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Upload image</label>
-          <label
-            htmlFor="imageUpload"
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg cursor-pointer inline-block"
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {preview && (
+              <img
+                src={preview}
+                alt="Preview"
+                className="mt-3 rounded-lg shadow-md max-h-48 object-cover"
+              />
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={getLocation}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
           >
-            📁 Choose File
-          </label>
-          <input
-            id="imageUpload"
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={handleChange}
-            className="hidden"
-            required
-          ></input>
-
-          {formData.image && (
-            <span className="inline-flex items-center gap-2 bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full shadow-sm">
-              {formData.image.name}
-              <button
-                type="button"
-                onClick={clearFile}
-                className="leading-none text-green-700 hover:text-green-900"
-                aria-label="Remove file"
-              >
-                ✕
-              </button>
-            </span>
+            Get My Location
+          </button>
+          {location.lat && (
+            <p className="text-sm text-gray-600">
+              📍 Latitude: {location.lat}, Longitude: {location.lon}
+            </p>
           )}
-        </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          className="w-full cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg"
-        >
-          Submit Complaint
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg disabled:opacity-50"
+          >
+            {loading ? "Submitting..." : "Submit Complaint"}
+          </button>
+        </form>
+
+        {status && <p className="mt-4 text-center font-medium">{status}</p>}
+      </div>
     </div>
   );
 }
+
+export default Complaints;
