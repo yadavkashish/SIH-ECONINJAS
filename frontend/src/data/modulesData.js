@@ -1,9 +1,3 @@
-import introVideo from "../videos/Intro.mp4";
-import segregationVideo from "../videos/waste-segregation.mp4";
-import compostingVideo from "../videos/composting.mp4";
-import threeRVideo from "../videos/3R.mp4";
-import communityVideo from "../videos/community.mp4";
-
 const modulesData = [
   {
     title: "Introduction to Waste Management",
@@ -16,7 +10,8 @@ const modulesData = [
         type: "video",
         description: "Why waste management matters (India’s problem + real-life impact).",
         hasActivity: false,
-        videoUrl: introVideo,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757335824/Intro_wwxs8i.mp4"
+,
       },
       {
         id: "introduction-content",
@@ -47,7 +42,7 @@ const modulesData = [
         type: "video",
         description: "How to use the 3-bin system.",
         hasActivity: false,
-        videoUrl: segregationVideo,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/q_auto,f_auto/waste-segregation.mp4",
       },
       {
         id: "segregation-home-content",
@@ -78,7 +73,7 @@ const modulesData = [
         type: "video",
         description: "Step-by-step guide to making compost at home.",
         hasActivity: false,
-        videoUrl: compostingVideo,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757321057/waste-segregation.mp4",
       },
       {
         id: "composting-content",
@@ -109,7 +104,7 @@ const modulesData = [
         type: "video",
         description: "Simple ways to reduce plastic, reuse items, and recycle effectively.",
         hasActivity: false,
-        videoUrl: threeRVideo,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757321034/3R_qgzpmt.mp4",
       },
       {
         id: "3r-content",
@@ -140,7 +135,7 @@ const modulesData = [
         type: "video",
         description: "How citizens can report waste (photo apps, local movements).",
         hasActivity: false,
-        videoUrl: communityVideo,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757321060/community_yzwdtm.mp4",
       },
       {
         id: "community-content",
