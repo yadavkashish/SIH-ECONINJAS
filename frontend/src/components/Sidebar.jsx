@@ -86,6 +86,17 @@ export default function Sidebar() {
         >
           Complain
         </NavLink>
+        <NavLink
+          to="/tracking"
+          end
+          className={({ isActive }) =>
+            `px-3 py-2 rounded-md transition ${
+              isActive ? "bg-green-600" : "hover:bg-green-700"
+            }`
+          }
+        >
+          Tracking
+        </NavLink>
           
 
 

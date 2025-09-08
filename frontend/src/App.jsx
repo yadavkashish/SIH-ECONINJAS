@@ -22,6 +22,7 @@ import BuyPage from "./pages/BuyPage";
 import SellPage from "./pages/SellPage";
 import CommunityPage from "./pages/CommunityPage";
 import Communities from "./pages/Communities";
+import Tracking from "./pages/Tracking"
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
 
           {/* Modules */}
           <Route path="/modules" element={<Modules />} />
+            <Route path="/tracking" element={<Tracking />} />
 
           {/* Module Sections */}
           <Route path="/video/:moduleId" element={<VideoPage />} />
@@ -53,7 +55,6 @@ export default function App() {
           <Route path="/pledge/:moduleId" element={<PledgePage />} />
           <Route path="/quiz/final" element={<FinalQuizPage />} />
           <Route path="/certificate" element={<CertificationPage />} />
-
           {/* Optional: Catch all route */}
           <Route
             path="*"
