@@ -8,6 +8,7 @@ function Complaints() {
   const [location, setLocation] = useState({ lat: null, lon: null });
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Get user location
   const getLocation = () => {
@@ -54,7 +55,7 @@ function Complaints() {
         formData.append("longitude", location.lon);
       }
 
-      const res = await axios.post("http://localhost:5000/api/complaints", formData, {
+      const res = await axios.post("${API_URL}/api/complaints", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
