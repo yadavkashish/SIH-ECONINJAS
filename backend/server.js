@@ -14,15 +14,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-// Configure Cloudinary
+// ===================== Cloudinary =====================
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configure multer storage with Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: {
@@ -32,16 +30,16 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage });
 
-// Configure Nodemailer
+// ===================== Nodemailer =====================
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
+    pass: process.env.GMAIL_PASS, // Gmail App Password
   },
 });
 
-// Reverse geocode function
+// ===================== Reverse Geocode =====================
 async function reverseGeocode(lat, lon) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
@@ -50,12 +48,12 @@ async function reverseGeocode(lat, lon) {
     });
     return data.display_name || "Unknown Location";
   } catch (err) {
-    console.error("Reverse geocode error:", err);
+    console.error("Reverse geocode error:", err.message);
     return "Unknown Location";
   }
 }
 
-// Complaint route
+// ===================== Complaint Route =====================
 app.post("/api/complaints", upload.single("image"), async (req, res) => {
   try {
     const { description, latitude, longitude } = req.body;
@@ -67,72 +65,76 @@ app.post("/api/complaints", upload.single("image"), async (req, res) => {
 
     const imageUrl = req.file?.path;
 
-    // Send email
-   const mailOptions = {
-  from: process.env.GMAIL_USER, // sender (your team Gmail)
-  to: process.env.AUTHORITY_EMAIL, // receiver (authority Gmail)
-  subject: "New Complaint Submitted",
-  html: `
-    <h2>New Complaint</h2>
-    <p><b>Description:</b> ${description}</p>
-    <p><b>Location:</b> ${locationText}</p>
-    <p><b>Coordinates:</b> ${latitude}, ${longitude}</p>
-    ${imageUrl ? `<p><b>Image:</b><br><img src="${imageUrl}" width="400"/></p>` : ""}
-  `,
-};
-
+    // Prepare email
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: process.env.AUTHORITY_EMAIL,
+      subject: "New Complaint Submitted",
+      html: `
+        <h2>New Complaint</h2>
+        <p><b>Description:</b> ${description}</p>
+        <p><b>Location:</b> ${locationText}</p>
+        <p><b>Coordinates:</b> ${latitude || "N/A"}, ${longitude || "N/A"}</p>
+        ${imageUrl ? `<p><b>Image:</b><br><img src="${imageUrl}" width="400"/></p>` : ""}
+      `,
+    };
 
     await transporter.sendMail(mailOptions);
 
     res.json({
-      message: "Complaint submitted successfully",
+      message: "✅ Complaint submitted successfully",
       imageUrl,
       location: locationText,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Something went wrong" });
+    console.error("Complaint Error:", err.message);
+    res.status(500).json({ error: "Something went wrong", details: err.message });
   }
 });
 
-
-// Schema
+// ===================== Location Schema =====================
 const locationSchema = new mongoose.Schema({
   deviceId: String,
   latitude: Number,
   longitude: Number,
   timestamp: { type: Date, default: Date.now },
 });
-
 const Location = mongoose.model("Location", locationSchema);
 
-// Endpoint to save location from phone
+// ===================== Location Routes =====================
 app.post("/api/location", async (req, res) => {
-  const { deviceId, latitude, longitude } = req.body;
+  try {
+    const { deviceId, latitude, longitude } = req.body;
 
-  await Location.findOneAndUpdate(
-    { deviceId },
-    { latitude, longitude, timestamp: new Date() },
-    { upsert: true }
-  );
+    await Location.findOneAndUpdate(
+      { deviceId },
+      { latitude, longitude, timestamp: new Date() },
+      { upsert: true }
+    );
 
-  res.json({ success: true });
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Location Save Error:", err.message);
+    res.status(500).json({ error: "Failed to save location" });
+  }
 });
 
-// Endpoint to get all latest locations
 app.get("/api/locations", async (req, res) => {
-  const locations = await Location.find({});
-  res.json(locations);
+  try {
+    const locations = await Location.find({});
+    res.json(locations);
+  } catch (err) {
+    console.error("Fetch Locations Error:", err.message);
+    res.status(500).json({ error: "Failed to fetch locations" });
+  }
 });
 
-const MONGO_URI = process.env.MONGO_URI;
-
+// ===================== MongoDB Connection =====================
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err.message));
 
-
-
+// ===================== Server =====================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
