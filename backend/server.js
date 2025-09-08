@@ -6,11 +6,14 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "cloudinary";
 import nodemailer from "nodemailer";
 import axios from "axios";
+import mongoose from "mongoose";
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // Configure Cloudinary
 cloudinary.v2.config({
@@ -91,6 +94,45 @@ app.post("/api/complaints", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 });
+
+
+// Schema
+const locationSchema = new mongoose.Schema({
+  deviceId: String,
+  latitude: Number,
+  longitude: Number,
+  timestamp: { type: Date, default: Date.now },
+});
+
+const Location = mongoose.model("Location", locationSchema);
+
+// Endpoint to save location from phone
+app.post("/api/location", async (req, res) => {
+  const { deviceId, latitude, longitude } = req.body;
+
+  await Location.findOneAndUpdate(
+    { deviceId },
+    { latitude, longitude, timestamp: new Date() },
+    { upsert: true }
+  );
+
+  res.json({ success: true });
+});
+
+// Endpoint to get all latest locations
+app.get("/api/locations", async (req, res) => {
+  const locations = await Location.find({});
+  res.json(locations);
+});
+
+const MONGO_URI = process.env.MONGO_URI;
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
