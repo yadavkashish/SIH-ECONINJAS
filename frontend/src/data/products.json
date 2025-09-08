@@ -1,86 +1,86 @@
 [
   {
     "id": 1,
-    "name": "Recycled Tote Bag",
-    "price": 300,
-    "desc": "Eco-friendly bag made from old fabrics",
-    "img": "https://via.placeholder.com/250x200?text=Tote+Bag"
+    "name": "Cloth Grocery Bag",
+    "price": 120,
+    "desc": "Reusable grocery bag made from old clothes",
+    "img": "/photos/cloth-grocery-bag.webp"
   },
   {
     "id": 2,
     "name": "Upcycled Lamp",
     "price": 1200,
     "desc": "Handmade lamp from glass bottles",
-    "img": "https://via.placeholder.com/250x200?text=Lamp"
+    "img": "/photos/Upcycled-lamp.webp"
   },
   {
     "id": 3,
     "name": "Paper Mache Bowl",
     "price": 450,
     "desc": "Durable and stylish recycled paper bowl",
-    "img": "https://via.placeholder.com/250x200?text=Paper+Bowl"
-  },
-  {
-    "id": 4,
-    "name": "Bamboo Toothbrush",
-    "price": 150,
-    "desc": "Biodegradable bamboo toothbrush for oral care",
-    "img": "https://via.placeholder.com/250x200?text=Bamboo+Toothbrush"
-  },
-  {
-    "id": 5,
-    "name": "Coconut Shell Candle Holder",
-    "price": 600,
-    "desc": "Handcrafted candle holder made from coconut shells",
-    "img": "https://via.placeholder.com/250x200?text=Candle+Holder"
-  },
-  {
-    "id": 6,
-    "name": "Jute Laptop Sleeve",
-    "price": 850,
-    "desc": "Eco-friendly laptop sleeve made with natural jute",
-    "img": "https://via.placeholder.com/250x200?text=Laptop+Sleeve"
+    "img": "/photos/Paper-bowl.webp"
   },
   {
     "id": 7,
     "name": "Recycled Notebook",
     "price": 200,
     "desc": "Notebook made from 100% recycled paper",
-    "img": "https://via.placeholder.com/250x200?text=Notebook"
+    "img": "/photos/notebook.webp"
+  },
+  {
+    "id": 5,
+    "name": "Coconut Shell Candle Holder",
+    "price": 600,
+    "desc": "Handcrafted candle holder made from coconut shells",
+    "img": "/photos/coconut-shell-candle.jpeg"
+  },
+  {
+    "id": 6,
+    "name": "Jute Laptop Sleeve",
+    "price": 850,
+    "desc": "Eco-friendly laptop sleeve made with natural jute",
+    "img": "/photos/laptop-bag.jpeg"
+  },
+  {
+    "id": 4,
+    "name": "Bamboo Toothbrush",
+    "price": 150,
+    "desc": "Biodegradable bamboo toothbrush for oral care",
+    "img": "/photos/toothbrush.webp"
   },
   {
     "id": 8,
     "name": "Glass Bottle Planter",
     "price": 500,
     "desc": "Planter crafted from recycled glass bottles",
-    "img": "https://via.placeholder.com/250x200?text=Planter"
+    "img": "/photos/glass-flower.jpg"
   },
   {
     "id": 9,
     "name": "Tyre Swing",
     "price": 1800,
     "desc": "Outdoor swing made from upcycled tyres",
-    "img": "https://via.placeholder.com/250x200?text=Tyre+Swing"
+    "img": "/photos/tyre.avif"
   },
   {
     "id": 10,
     "name": "Eco-friendly Soap",
     "price": 250,
     "desc": "Handmade soap with natural ingredients",
-    "img": "https://via.placeholder.com/250x200?text=Soap"
+    "img": "/photos/soap.jpeg"
   },
   {
     "id": 11,
-    "name": "Cloth Grocery Bag",
-    "price": 120,
-    "desc": "Reusable grocery bag made from old clothes",
-    "img": "https://via.placeholder.com/250x200?text=Grocery+Bag"
+    "name": "Recycled Tote Bag",
+    "price": 300,
+    "desc": "Eco-friendly bag made from old fabrics",
+    "img": "/photos/Recyled-tode-bag.jpg"
   },
   {
     "id": 12,
     "name": "Upcycled Wooden Shelf",
     "price": 2200,
     "desc": "Rustic shelf built from reclaimed wood",
-    "img": "https://via.placeholder.com/250x200?text=Wooden+Shelf"
+    "img": "/photos/wooden-shelf.webp"
   }
 ]

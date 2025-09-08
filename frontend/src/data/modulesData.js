@@ -6,10 +6,12 @@ const modulesData = [
       {
         id: "introduction-video",
         name: "Video",
-        path: "/video/intro-waste",
+        path: "/video/intro-waste",   // ✅ use module id
         type: "video",
         description: "Why waste management matters (India’s problem + real-life impact).",
         hasActivity: false,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757335824/Intro_wwxs8i.mp4"
+,
       },
       {
         id: "introduction-content",
@@ -36,10 +38,11 @@ const modulesData = [
       {
         id: "segregation-home-video",
         name: "Video",
-        path: "/video/segregation-home",
+        path: "/video/segregation-home",   // ✅
         type: "video",
         description: "How to use the 3-bin system.",
         hasActivity: false,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/q_auto,f_auto/waste-segregation.mp4",
       },
       {
         id: "segregation-home-content",
@@ -66,10 +69,11 @@ const modulesData = [
       {
         id: "composting-video",
         name: "Video",
-        path: "/video/composting-easy",
+        path: "/video/composting-easy",   // ✅
         type: "video",
         description: "Step-by-step guide to making compost at home.",
         hasActivity: false,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757321057/waste-segregation.mp4",
       },
       {
         id: "composting-content",
@@ -96,10 +100,11 @@ const modulesData = [
       {
         id: "3r-video",
         name: "Video",
-        path: "/video/reduce-reuse-recycle",
+        path: "/video/reduce-reuse-recycle",   // ✅
         type: "video",
         description: "Simple ways to reduce plastic, reuse items, and recycle effectively.",
         hasActivity: false,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757321034/3R_qgzpmt.mp4",
       },
       {
         id: "3r-content",
@@ -126,10 +131,11 @@ const modulesData = [
       {
         id: "community-video",
         name: "Video",
-        path: "/video/community-digital",
+        path: "/video/community-digital",   // ✅
         type: "video",
         description: "How citizens can report waste (photo apps, local movements).",
         hasActivity: false,
+        videoUrl: "https://res.cloudinary.com/dz5qcaurk/video/upload/v1757321060/community_yzwdtm.mp4",
       },
       {
         id: "community-content",
@@ -170,34 +176,7 @@ const modulesData = [
         hasActivity: false,
       }
     ]
-  },
-  // {
-  //   title: "Extra Beginner-Friendly Features",
-  //   id: "extra-features",
-  //   sections: [
-  //     {
-  //       name: "Badges",
-  //       path: "/badges",
-  //       type: "feature",
-  //       description: "Earn badges like “Segregation Starter”, “Compost Learner”.",
-  //       hasActivity: false,
-  //     },
-  //     {
-  //       name: "Progress Bar",
-  //       path: "/progress",
-  //       type: "feature",
-  //       description: "Shows % course completed.",
-  //       hasActivity: false,
-  //     },
-  //     {
-  //       name: "Language Options",
-  //       path: "/languages",
-  //       type: "feature",
-  //       description: "Local languages + English/Hindi.",
-  //       hasActivity: false,
-  //     }
-  //   ]
-  // }
+  }
 ];
 
 export default modulesData;

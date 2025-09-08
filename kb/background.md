@@ -1,0 +1,2 @@
+# Background
+India har din approx 1.7 lakh tonnes municipal solid waste generate karta hai. Sirf 54% scientifically treat hota hai. Baaki landfills, open burning, drains aur water bodies me chala jata hai → pollution + health hazards.
