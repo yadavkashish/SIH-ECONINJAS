@@ -1,3 +1,9 @@
+import introVideo from "../videos/Intro.mp4";
+import segregationVideo from "../videos/waste-segregation.mp4";
+import compostingVideo from "../videos/composting.mp4";
+import threeRVideo from "../videos/3R.mp4";
+import communityVideo from "../videos/community.mp4";
+
 const modulesData = [
   {
     title: "Introduction to Waste Management",
@@ -6,10 +12,11 @@ const modulesData = [
       {
         id: "introduction-video",
         name: "Video",
-        path: "/video/intro-waste",
+        path: "/video/intro-waste",   // ✅ use module id
         type: "video",
         description: "Why waste management matters (India’s problem + real-life impact).",
         hasActivity: false,
+        videoUrl: introVideo,
       },
       {
         id: "introduction-content",
@@ -36,10 +43,11 @@ const modulesData = [
       {
         id: "segregation-home-video",
         name: "Video",
-        path: "/video/segregation-home",
+        path: "/video/segregation-home",   // ✅
         type: "video",
         description: "How to use the 3-bin system.",
         hasActivity: false,
+        videoUrl: segregationVideo,
       },
       {
         id: "segregation-home-content",
@@ -66,10 +74,11 @@ const modulesData = [
       {
         id: "composting-video",
         name: "Video",
-        path: "/video/composting-easy",
+        path: "/video/composting-easy",   // ✅
         type: "video",
         description: "Step-by-step guide to making compost at home.",
         hasActivity: false,
+        videoUrl: compostingVideo,
       },
       {
         id: "composting-content",
@@ -96,10 +105,11 @@ const modulesData = [
       {
         id: "3r-video",
         name: "Video",
-        path: "/video/reduce-reuse-recycle",
+        path: "/video/reduce-reuse-recycle",   // ✅
         type: "video",
         description: "Simple ways to reduce plastic, reuse items, and recycle effectively.",
         hasActivity: false,
+        videoUrl: threeRVideo,
       },
       {
         id: "3r-content",
@@ -126,10 +136,11 @@ const modulesData = [
       {
         id: "community-video",
         name: "Video",
-        path: "/video/community-digital",
+        path: "/video/community-digital",   // ✅
         type: "video",
         description: "How citizens can report waste (photo apps, local movements).",
         hasActivity: false,
+        videoUrl: communityVideo,
       },
       {
         id: "community-content",
@@ -170,34 +181,7 @@ const modulesData = [
         hasActivity: false,
       }
     ]
-  },
-  // {
-  //   title: "Extra Beginner-Friendly Features",
-  //   id: "extra-features",
-  //   sections: [
-  //     {
-  //       name: "Badges",
-  //       path: "/badges",
-  //       type: "feature",
-  //       description: "Earn badges like “Segregation Starter”, “Compost Learner”.",
-  //       hasActivity: false,
-  //     },
-  //     {
-  //       name: "Progress Bar",
-  //       path: "/progress",
-  //       type: "feature",
-  //       description: "Shows % course completed.",
-  //       hasActivity: false,
-  //     },
-  //     {
-  //       name: "Language Options",
-  //       path: "/languages",
-  //       type: "feature",
-  //       description: "Local languages + English/Hindi.",
-  //       hasActivity: false,
-  //     }
-  //   ]
-  // }
+  }
 ];
 
 export default modulesData;

@@ -6,8 +6,33 @@ import "leaflet-routing-machine";
 import "leaflet-geosearch/dist/geosearch.css";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 
+// ✅ Function to fetch recycling centers from Overpass API
+async function fetchRecyclingCenters(lat, lon, radius = 5000) {
+  const query = `
+    [out:json];
+    node(around:${radius},${lat},${lon})["amenity"="recycling"];
+    out;
+  `;
+
+  const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  console.log("Overpass raw response:", data); // 👈 debug
+
+  return data.elements.map(el => ({
+    id: el.id,
+    name: el.tags?.name || "Unnamed Recycling Center",
+    lat: el.lat,
+    lon: el.lon,
+  }));
+}
+
 export default function MapPage() {
   const [routeInfo, setRouteInfo] = useState(null);
+  const [centers, setCenters] = useState([]); // ✅ store recycling centers
+  const [mapInstance, setMapInstance] = useState(null); // keep map reference
 
   useEffect(() => {
     // Prevent "Map container is already initialized"
@@ -16,8 +41,9 @@ export default function MapPage() {
       container._leaflet_id = null;
     }
 
-    // Init map
-    const map = L.map("map").setView([28.6139, 77.209], 12); // Default: Delhi
+    // Init map (default: Delhi)
+    const map = L.map("map").setView([28.6139, 77.209], 12);
+    setMapInstance(map);
 
     // Tile layer (OSM free)
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -58,7 +84,7 @@ export default function MapPage() {
 
     routingControl.addTo(map);
 
-    // Move routing panel into our sidebar
+    // Move routing panel into sidebar
     const routingContainer = document.querySelector("#routing-panel");
     if (routingContainer) {
       routingContainer.appendChild(routingControl.getContainer());
@@ -67,9 +93,41 @@ export default function MapPage() {
     // Listen for route found → extract distance & time
     routingControl.on("routesfound", function (e) {
       const route = e.routes[0];
-      const distanceKm = (route.summary.totalDistance / 1000).toFixed(2); // km
-      const durationMin = Math.round(route.summary.totalTime / 60); // minutes
+      const distanceKm = (route.summary.totalDistance / 1000).toFixed(2);
+      const durationMin = Math.round(route.summary.totalTime / 60);
       setRouteInfo({ distance: distanceKm, duration: durationMin });
+    });
+
+    // ✅ Fetch recycling centers for initial location (Delhi)
+    fetchRecyclingCenters(28.6139, 77.209).then((data) => {
+      setCenters(data);
+      data.forEach((c) => {
+        L.marker([c.lat, c.lon])
+          .addTo(map)
+          .bindPopup(`<b>${c.name}</b><br/>♻️ Recycling Center`);
+      });
+    });
+
+    // ✅ When user searches a location → fetch recycling centers near that place
+    map.on("geosearch/showlocation", async (result) => {
+      const { y: lat, x: lon } = result.location;
+
+      // Clear old markers
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Marker && !layer._icon.classList.contains("leaflet-routing-icon")) {
+          map.removeLayer(layer);
+        }
+      });
+
+      // Fetch new centers
+      const newCenters = await fetchRecyclingCenters(lat, lon);
+      setCenters(newCenters);
+
+      newCenters.forEach((c) => {
+        L.marker([c.lat, c.lon])
+          .addTo(map)
+          .bindPopup(`<b>${c.name}</b><br/>♻️ Recycling Center`);
+      });
     });
 
     return () => {
@@ -82,11 +140,14 @@ export default function MapPage() {
       {/* Sidebar Dashboard */}
       <div className="w-96 bg-white shadow-2xl p-6 z-[1000] flex flex-col overflow-y-auto">
         <h2 className="text-2xl font-bold mb-4">Nearby Recycling Centers</h2>
+
+        {/* ✅ Dynamic list from Overpass API */}
         <ul className="space-y-3 text-gray-700">
-          <li>♻️ Green Earth Recycling – 2 km</li>
-          <li>🏭 Eco Waste Plant – 5 km</li>
-          <li>🛠️ JunkMart Scrap Shop – 7 km</li>
-          <li>⚡ BioCNG Plant – 10 km</li>
+          {centers.length > 0 ? (
+            centers.map((c) => <li key={c.id}>♻️ {c.name}</li>)
+          ) : (
+            <li className="text-gray-500">Loading centers...</li>
+          )}
         </ul>
 
         <button

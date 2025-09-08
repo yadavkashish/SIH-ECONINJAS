@@ -4,83 +4,83 @@
     "name": "Recycled Tote Bag",
     "price": 300,
     "desc": "Eco-friendly bag made from old fabrics",
-    "img": "https://via.placeholder.com/250x200?text=Tote+Bag"
+    "img": "https://m.media-amazon.com/images/I/81e8qXW0mbL._UY1100_.jpg"
   },
   {
     "id": 2,
     "name": "Upcycled Lamp",
     "price": 1200,
     "desc": "Handmade lamp from glass bottles",
-    "img": "https://via.placeholder.com/250x200?text=Lamp"
+    "img": "https://i.etsystatic.com/56509590/r/il/0a94cd/6555801811/il_fullxfull.6555801811_w5lf.jpg"
   },
   {
     "id": 3,
     "name": "Paper Mache Bowl",
     "price": 450,
     "desc": "Durable and stylish recycled paper bowl",
-    "img": "https://via.placeholder.com/250x200?text=Paper+Bowl"
+    "img": "https://5.imimg.com/data5/XL/JE/MY-39777318/paper-bag-500x500.jpg"
   },
   {
     "id": 4,
     "name": "Bamboo Toothbrush",
     "price": 150,
     "desc": "Biodegradable bamboo toothbrush for oral care",
-    "img": "https://via.placeholder.com/250x200?text=Bamboo+Toothbrush"
+    "img": "https://www.ecofreaky.com/cdn/shop/files/kid_brush_1.png?v=1734959082"
   },
   {
     "id": 5,
     "name": "Coconut Shell Candle Holder",
     "price": 600,
     "desc": "Handcrafted candle holder made from coconut shells",
-    "img": "https://via.placeholder.com/250x200?text=Candle+Holder"
+    "img": "https://i.etsystatic.com/18630919/r/il/dc5617/4404756464/il_1080xN.4404756464_88kj.jpg"
   },
   {
     "id": 6,
     "name": "Jute Laptop Sleeve",
     "price": 850,
     "desc": "Eco-friendly laptop sleeve made with natural jute",
-    "img": "https://via.placeholder.com/250x200?text=Laptop+Sleeve"
+    "img": "https://shopearthbags.com/cdn/shop/files/c391.jpg?v=1745308998&width=1400"
   },
   {
     "id": 7,
     "name": "Recycled Notebook",
     "price": 200,
     "desc": "Notebook made from 100% recycled paper",
-    "img": "https://via.placeholder.com/250x200?text=Notebook"
+    "img": "https://www.greengiving.eu/storage/Producten/Notitieboekjes/gerecycled-notitieboek-met-balpen-bedrukken-8763775.jpg"
   },
   {
     "id": 8,
     "name": "Glass Bottle Planter",
     "price": 500,
     "desc": "Planter crafted from recycled glass bottles",
-    "img": "https://via.placeholder.com/250x200?text=Planter"
+    "img": "https://m.media-amazon.com/images/I/81Yn8vCViRL._UF894,1000_QL80_.jpg"
   },
   {
     "id": 9,
     "name": "Tyre Swing",
     "price": 1800,
     "desc": "Outdoor swing made from upcycled tyres",
-    "img": "https://via.placeholder.com/250x200?text=Tyre+Swing"
+    "img": "https://static.wixstatic.com/media/282c7d_9d236d92a71d4fae9ab533c7d9aedffb~mv2.jpg/v1/fill/w_480,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/282c7d_9d236d92a71d4fae9ab533c7d9aedffb~mv2.jpg"
   },
   {
     "id": 10,
     "name": "Eco-friendly Soap",
     "price": 250,
     "desc": "Handmade soap with natural ingredients",
-    "img": "https://via.placeholder.com/250x200?text=Soap"
+    "img": "https://www.bgr.com/bgr/science/chemist-finds-a-way-to-transform-plastic-waste-into-soap/AdobeStock_219435817.jpg"
   },
   {
     "id": 11,
     "name": "Cloth Grocery Bag",
     "price": 120,
     "desc": "Reusable grocery bag made from old clothes",
-    "img": "https://via.placeholder.com/250x200?text=Grocery+Bag"
+    "img": "https://puremitti.com/cdn/shop/products/combopackof3multipouchreusableecofriendlysolutions.png?v=1714215786&width=1445"
   },
   {
     "id": 12,
     "name": "Upcycled Wooden Shelf",
     "price": 2200,
     "desc": "Rustic shelf built from reclaimed wood",
-    "img": "https://via.placeholder.com/250x200?text=Wooden+Shelf"
+    "img": "https://images.squarespace-cdn.com/content/v1/61b90293f0b0b504e06fb97e/1640257238089-QY6IHHMTOD4I8KSH2UYA/Before-and-After-DIY-Upcycled-Bookshelf-and-Hutch-_6-of-12_600x600.jpeg"
   }
 ]

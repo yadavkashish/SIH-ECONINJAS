@@ -7,26 +7,39 @@ export default function VideoPage() {
   const navigate = useNavigate();
   const { completeStep } = useProgress();
 
-  const moduleIndex = modulesData.findIndex((mod) => mod.id === moduleId);
-  if (moduleIndex === -1)
+  // Find the module based on the route param
+  const module = modulesData.find((mod) => mod.id === moduleId);
+  if (!module) {
     return <p className="p-6 text-center">Module not found!</p>;
-  const module = modulesData[moduleIndex];
+  }
+
+  // Get the video section of this module
+  const videoSection = module.sections.find((s) => s.type === "video");
 
   const handleNext = () => {
-    const contentSection = module.sections.find((section) => section.type === "content");
+    const contentSection = module.sections.find(
+      (section) => section.type === "content"
+    );
 
-  if (contentSection) {
-    completeStep(contentSection.id); // ✅ correct ID directly from data
-  }
-    navigate(`/content/${moduleId}`);
+    if (contentSection) {
+      completeStep(contentSection.id); // mark step as complete
+      navigate(contentSection.path);   // go to content page
+    }
   };
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Video: {moduleId}</h1>
-      <video width="100%" controls>
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
-      </video>
+      <h1 className="text-2xl font-bold mb-4">{module.title} - Video</h1>
+
+      {videoSection?.videoUrl ? (
+        <video width="100%" controls>
+          <source src={videoSection.videoUrl} type="video/mp4" />
+        </video>
+      ) : (
+        <p className="text-center text-gray-500">
+          No video available for this module.
+        </p>
+      )}
 
       <div className="flex justify-between mt-6">
         <button
@@ -38,6 +51,7 @@ export default function VideoPage() {
         <button
           className="px-4 py-2 bg-blue-600 text-white rounded"
           onClick={handleNext}
+          disabled={!module.sections.find((s) => s.type === "content")}
         >
           Next →
         </button>
