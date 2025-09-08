@@ -55,9 +55,10 @@ function Complaints() {
         formData.append("longitude", location.lon);
       }
 
-      const res = await axios.post("${API_URL}/api/complaints", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(`${API_URL}/api/complaints`, formData, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
+
 
       setStatus("✅ Complaint submitted successfully!");
       console.log("Response:", res.data);
