@@ -8,7 +8,7 @@ dotenv.config()
 const app = express()
 
 // Middleware
-const cors = require("cors");
+
 
 const allowedOrigins = [
   "https://econinjas.netlify.app", // deployed frontend
