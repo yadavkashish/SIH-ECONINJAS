@@ -1,23 +1,32 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const participantSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  city: { type: String, required: true },
-  pincode: { type: String, required: true },
-  mobileNumber: { type: String, required: true },
-  role: { 
-    type: String, 
-    enum: ["Normal User", "Municipal Worker", "Industrialist"], 
-    required: true 
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  ngoMember: { type: Boolean, default: false },
-
-  // Link participant form to the logged-in user
-  userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "User", 
-    required: true 
-  }
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Participant", participantSchema);
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+// Compare password method
+userSchema.methods.matchPassword = async function(password) {
+  return await bcrypt.compare(password, this.password);
+}
+
+module.exports = mongoose.model('User', userSchema);
