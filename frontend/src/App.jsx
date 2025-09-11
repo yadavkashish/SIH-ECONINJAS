@@ -243,7 +243,7 @@ export default function App() {
             {/* Public Main Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/buyandsell" element={<BuySell />} />
-            <Route path="/ParticipantForm" element={<ParticipantForm />} />
+            <Route path="/participantsform" element={<ParticipantForm />} />
 
             <Route path="/communities" element={<Communities />} />
             <Route path="/community/:id" element={<CommunityPage />} />
