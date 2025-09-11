@@ -5,7 +5,6 @@ import {
   Send,
   Trash2,
   Bot,
-  User,
   Mic,
   MicOff,
   Download,
@@ -33,8 +32,12 @@ import SellPage from "./pages/SellPage";
 import CommunityPage from "./pages/CommunityPage";
 import Communities from "./pages/Communities";
 import Tracking from "./pages/Tracking";
-
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ParticipantForm from "./components/ParticipantForm";
 import { ProgressProvider } from "./context/ProgressContent";
+import API from "./utils/api";
 
 export default function App() {
   // WasteBot states
@@ -50,7 +53,7 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false); // Chat toggle
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -89,9 +92,11 @@ export default function App() {
 
   // Speech recognition controls
   const startListening = () =>
-    recognitionRef.current && (setIsListening(true), recognitionRef.current.start());
+    recognitionRef.current &&
+    (setIsListening(true), recognitionRef.current.start());
   const stopListening = () =>
-    recognitionRef.current && (setIsListening(false), recognitionRef.current.stop());
+    recognitionRef.current &&
+    (setIsListening(false), recognitionRef.current.stop());
 
   // Chat functions
   const sendMessage = async () => {
@@ -102,7 +107,7 @@ export default function App() {
     setIsTyping(true);
 
     try {
-      const res = await fetch(`${API_URL}/ask`, {
+      const res = await fetch(`${API_URL}/api/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: input }),
@@ -110,14 +115,22 @@ export default function App() {
       const data = await res.json();
       setTimeout(() => {
         setIsTyping(false);
-        const botMessage = { sender: "bot", text: data.answer, timestamp: new Date() };
+        const botMessage = {
+          sender: "bot",
+          text: data.answer,
+          timestamp: new Date(),
+        };
         setMessages((prev) => [...prev, botMessage]);
       }, 1000);
     } catch {
       setIsTyping(false);
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "⚠️ Server not responding...", timestamp: new Date() },
+        {
+          sender: "bot",
+          text: "⚠️ Server not responding...",
+          timestamp: new Date(),
+        },
       ]);
     }
   };
@@ -139,7 +152,9 @@ export default function App() {
     ]);
 
   const exportChat = () => {
-    const blob = new Blob([JSON.stringify(messages, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(messages, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -162,16 +177,74 @@ export default function App() {
     reader.readAsText(file);
   };
 
+  // Profile Page (Protected)
+  function Profile() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+      API.get("/auth/profile")
+        .then((res) => setUser(res.data))
+        .catch(() => setUser(null));
+    }, []);
+
+    const logout = () => {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    };
+
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        {user ? (
+          <div className="p-6 bg-white shadow rounded text-center space-y-3">
+            <h1 className="text-xl font-bold">Welcome {user.name}</h1>
+            <p>{user.email}</p>
+            <button
+              onClick={logout}
+              className="mt-3 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <Router>
       <ProgressProvider>
         <Sidebar />
         <main className="ml-64 flex-1 p-6 bg-gray-50 min-h-screen">
           <Routes>
-            {/* Main Pages */}
+            {/* Auth Pages */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Public Main Pages */}
             <Route path="/" element={<Home />} />
-            <Route path="/account" element={<Account />} />
             <Route path="/buyandsell" element={<BuySell />} />
+            <Route path="/ParticipantForm" element={<ParticipantForm />} />
+
             <Route path="/communities" element={<Communities />} />
             <Route path="/community/:id" element={<CommunityPage />} />
             <Route path="/complaints" element={<Complaints />} />
@@ -187,6 +260,8 @@ export default function App() {
             <Route path="/pledge/:moduleId" element={<PledgePage />} />
             <Route path="/quiz/final" element={<FinalQuizPage />} />
             <Route path="/certificate" element={<CertificationPage />} />
+
+            {/* 404 */}
             <Route
               path="*"
               element={
@@ -212,7 +287,9 @@ export default function App() {
             {isChatOpen && (
               <div
                 className={`flex flex-col h-[500px] w-96 max-w-full rounded-xl shadow-lg overflow-hidden border ${
-                  isDarkMode ? "bg-gray-800/80 border-gray-600" : "bg-white/90 border-gray-300"
+                  isDarkMode
+                    ? "bg-gray-800/80 border-gray-600"
+                    : "bg-white/90 border-gray-300"
                 }`}
               >
                 {/* Header */}
@@ -242,7 +319,10 @@ export default function App() {
                     >
                       {isDarkMode ? "🌙" : "☀️"}
                     </button>
-                    <button onClick={() => setIsChatOpen(false)} title="Close Chat">
+                    <button
+                      onClick={() => setIsChatOpen(false)}
+                      title="Close Chat"
+                    >
                       ❌
                     </button>
                   </div>
@@ -258,7 +338,9 @@ export default function App() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className={`flex ${
-                          msg.sender === "user" ? "justify-end" : "justify-start"
+                          msg.sender === "user"
+                            ? "justify-end"
+                            : "justify-start"
                         }`}
                       >
                         <div
@@ -279,7 +361,9 @@ export default function App() {
 
                 {/* Input */}
                 <div className="p-2 flex gap-2 border-t">
-                  <button onClick={isListening ? stopListening : startListening}>
+                  <button
+                    onClick={isListening ? stopListening : startListening}
+                  >
                     {isListening ? <MicOff /> : <Mic />}
                   </button>
                   <textarea
