@@ -8,7 +8,25 @@ dotenv.config()
 const app = express()
 
 // Middleware
-app.use(cors())
+const cors = require("cors");
+
+const allowedOrigins = [
+  "https://econinjas.netlify.app", // deployed frontend
+  "http://localhost:5173"           // local frontend
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // allow requests with no origin (like Postman) or from allowedOrigins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // if you use cookies/auth headers
+}));
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
