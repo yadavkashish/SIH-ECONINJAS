@@ -4,6 +4,12 @@ const dotenv = require("dotenv")
 const connectDB = require("./config/db")
 const participantRoutes = require("./routes/participantRoutes");
 
+// Local imports
+const wardsRouter = require("./routes/wards");
+const applicationsRouter = require("./routes/applications");
+const dashboardRouter = require("./routes/dashboard");
+
+// ===================== Config =====================
 dotenv.config()
 const app = express()
 
@@ -38,6 +44,9 @@ app.use("/api/complaints", require("./routes/complaintRoutes"))
 app.use("/api/location", require("./routes/locationRoutes"))
 app.use("/api/chatbot", require("./routes/chatbotRoutes"))
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/dashboard", dashboardRouter);
+app.use("/api/applications", applicationsRouter);
+app.use("/api/wards", wardsRouter);
 app.use("/api/participants", participantRoutes);
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))
