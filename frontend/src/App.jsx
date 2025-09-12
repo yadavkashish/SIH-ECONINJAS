@@ -1,16 +1,6 @@
 // src/App.jsx
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import {
-  Send,
-  Trash2,
-  Bot,
-  Mic,
-  MicOff,
-  Download,
-  Upload,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 // Components & Pages
 import Sidebar from "./components/Sidebar";
@@ -37,153 +27,20 @@ import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ParticipantForm from "./components/ParticipantForm";
 import { ProgressProvider } from "./context/ProgressContent";
-import API from "./utils/api";
+import CitizenForm from "./components/CitizenForm";
+import AdminDashboard from "./components/AdminDashboard";
+import MunicipalDashboard from "./components/MunicipalDashboard";
+import Chatbot from "./components/Chatbot"
 
 export default function App() {
-  // WasteBot states
-  const [messages, setMessages] = useState([
-    {
-      sender: "bot",
-      text: "🤖 Hi! Main tumhara Waste Management Assistant hoon. Mujhse kuch bhi poochho!",
-      timestamp: new Date(),
-    },
-  ]);
-  const API_URL = import.meta.env.VITE_API_URL;
-  const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const messagesEndRef = useRef(null);
-  const recognitionRef = useRef(null);
-
-  // Speech recognition setup
-  useEffect(() => {
-    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = "en-US";
-
-      recognitionRef.current.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map((r) => r[0].transcript)
-          .join("");
-        setInput(transcript);
-      };
-
-      recognitionRef.current.onend = () => setIsListening(false);
-    }
-  }, []);
-
-  // Scroll to bottom
-  useEffect(
-    () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }),
-    [messages]
-  );
-
-  // Dark mode toggle
-  useEffect(() => {
-    if (isDarkMode) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-  }, [isDarkMode]);
-
-  // Speech recognition controls
-  const startListening = () =>
-    recognitionRef.current &&
-    (setIsListening(true), recognitionRef.current.start());
-  const stopListening = () =>
-    recognitionRef.current &&
-    (setIsListening(false), recognitionRef.current.stop());
-
-  // Chat functions
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const userMessage = { sender: "user", text: input, timestamp: new Date() };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsTyping(true);
-
-    try {
-      const res = await fetch(`${API_URL}/api/chatbot`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input }),
-      });
-      const data = await res.json();
-      setTimeout(() => {
-        setIsTyping(false);
-        const botMessage = {
-          sender: "bot",
-          text: data.answer,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, botMessage]);
-      }, 1000);
-    } catch {
-      setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: "⚠️ Server not responding...",
-          timestamp: new Date(),
-        },
-      ]);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const clearChat = () =>
-    setMessages([
-      {
-        sender: "bot",
-        text: "🤖 Hi! Main tumhara Waste Management Assistant hoon. Mujhse kuch bhi poochho!",
-        timestamp: new Date(),
-      },
-    ]);
-
-  const exportChat = () => {
-    const blob = new Blob([JSON.stringify(messages, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "wastebot-chat.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const importChat = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        setMessages(JSON.parse(evt.target.result));
-      } catch {
-        console.error("Error parsing chat file");
-      }
-    };
-    reader.readAsText(file);
-  };
-
   // Profile Page (Protected)
   function Profile() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-      API.get("/auth/profile")
-        .then((res) => setUser(res.data))
+      fetch("/api/auth/profile")
+        .then((res) => res.json())
+        .then((data) => setUser(data))
         .catch(() => setUser(null));
     }, []);
 
@@ -244,7 +101,6 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/buyandsell" element={<BuySell />} />
             <Route path="/participantsform" element={<ParticipantForm />} />
-
             <Route path="/communities" element={<Communities />} />
             <Route path="/community/:id" element={<CommunityPage />} />
             <Route path="/complaints" element={<Complaints />} />
@@ -261,6 +117,19 @@ export default function App() {
             <Route path="/quiz/final" element={<FinalQuizPage />} />
             <Route path="/certificate" element={<CertificationPage />} />
 
+            {/* Committee Pages */}
+            <Route path="/citizen-form" element={<CitizenForm />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route
+              path="/municipal"
+              element={
+                <MunicipalDashboard
+                  adminToken="secure-admin-token"
+                  city="Ghaziabad"
+                />
+              }
+            />
+
             {/* 404 */}
             <Route
               path="*"
@@ -271,116 +140,9 @@ export default function App() {
               }
             />
           </Routes>
-
-          {/* WasteBot Chat */}
-          <div className="fixed bottom-4 right-4 z-50">
-            {!isChatOpen && (
-              <button
-                onClick={() => setIsChatOpen(true)}
-                className="p-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700"
-                title="Open WasteBot"
-              >
-                💬 WasteBot
-              </button>
-            )}
-
-            {isChatOpen && (
-              <div
-                className={`flex flex-col h-[500px] w-96 max-w-full rounded-xl shadow-lg overflow-hidden border ${
-                  isDarkMode
-                    ? "bg-gray-800/80 border-gray-600"
-                    : "bg-white/90 border-gray-300"
-                }`}
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold">
-                  <div className="flex items-center gap-2">
-                    <Bot /> WasteBot Assistant
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={clearChat} title="Clear Chat">
-                      <Trash2 />
-                    </button>
-                    <button onClick={exportChat} title="Export Chat">
-                      <Download />
-                    </button>
-                    <label title="Import Chat">
-                      <Upload />
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={importChat}
-                        className="hidden"
-                      />
-                    </label>
-                    <button
-                      onClick={() => setIsDarkMode(!isDarkMode)}
-                      title="Toggle Theme"
-                    >
-                      {isDarkMode ? "🌙" : "☀️"}
-                    </button>
-                    <button
-                      onClick={() => setIsChatOpen(false)}
-                      title="Close Chat"
-                    >
-                      ❌
-                    </button>
-                  </div>
-                </div>
-
-                {/* Messages */}
-                <div className="flex-1 p-2 overflow-y-auto space-y-2">
-                  <AnimatePresence>
-                    {messages.map((msg, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className={`flex ${
-                          msg.sender === "user"
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
-                      >
-                        <div
-                          className={`p-2 rounded-lg max-w-[75%] ${
-                            msg.sender === "user"
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-200 text-gray-800"
-                          }`}
-                        >
-                          {msg.text}
-                        </div>
-                      </motion.div>
-                    ))}
-                    {isTyping && <div>Bot is typing...</div>}
-                  </AnimatePresence>
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Input */}
-                <div className="p-2 flex gap-2 border-t">
-                  <button
-                    onClick={isListening ? stopListening : startListening}
-                  >
-                    {isListening ? <MicOff /> : <Mic />}
-                  </button>
-                  <textarea
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Type your question..."
-                    className="flex-1 rounded-md p-2 border"
-                  />
-                  <button onClick={sendMessage}>
-                    <Send />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
         </main>
+
+        <Chatbot />
       </ProgressProvider>
     </Router>
   );

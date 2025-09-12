@@ -134,6 +134,7 @@ export default function Sidebar() {
             </NavLink>
             <NavLink
               to="/rewards"
+              end
               className={({ isActive }) =>
                 `px-3 py-2 rounded-md transition ${
                   isActive ? "bg-green-600" : "hover:bg-green-700"
@@ -141,6 +142,41 @@ export default function Sidebar() {
               }
             >
               Rewards
+            </NavLink>
+
+            {/* Committee Pages */}
+            <NavLink
+              to="/citizen-form"
+              end
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md transition ${
+                  isActive ? "bg-green-600" : "hover:bg-green-700"
+                }`
+              }
+            >
+              Citizen Form
+            </NavLink>
+            <NavLink
+              to="/admin"
+              end
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md transition ${
+                  isActive ? "bg-green-600" : "hover:bg-green-700"
+                }`
+              }
+            >
+              Admin Dashboard
+            </NavLink>
+            <NavLink
+              to="/municipal"
+              end
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md transition ${
+                  isActive ? "bg-green-600" : "hover:bg-green-700"
+                }`
+              }
+            >
+              Municipal Dashboard
             </NavLink>
 
             {/* Logout button */}
