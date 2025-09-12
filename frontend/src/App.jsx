@@ -1,7 +1,8 @@
 // src/App.jsx
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import { Send, Trash2, Bot, Mic, MicOff, Download, Upload } from "lucide-react"; 
 // Components & Pages
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
@@ -26,11 +27,13 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ParticipantForm from "./components/ParticipantForm";
+
 import { ProgressProvider } from "./context/ProgressContent";
 import CitizenForm from "./components/CitizenForm";
 import AdminDashboard from "./components/AdminDashboard";
 import MunicipalDashboard from "./components/MunicipalDashboard";
-import Chatbot from "./components/Chatbot"
+import Chatbot from "./components/Chatbot";
+import RewardsSection from "./pages/Rewards-section";
 
 export default function App() {
   // Profile Page (Protected)
@@ -116,6 +119,7 @@ export default function App() {
             <Route path="/pledge/:moduleId" element={<PledgePage />} />
             <Route path="/quiz/final" element={<FinalQuizPage />} />
             <Route path="/certificate" element={<CertificationPage />} />
+            <Route path="/rewards" element={<RewardsSection />} />
 
             {/* Committee Pages */}
             <Route path="/citizen-form" element={<CitizenForm />} />
