@@ -1,8 +1,11 @@
 const express = require("express")
+const http = require("http");
 const cors = require("cors")
 const dotenv = require("dotenv")
 const connectDB = require("./config/db")
 const participantRoutes = require("./routes/participantRoutes");
+const { initWebSocket } = require("./websocket");
+const locationsRouter = require("./routes/locationRoutes");
 
 // Local imports
 const wardsRouter = require("./routes/wards");
@@ -50,6 +53,9 @@ app.use("/api/greenChampion", greenChampion);
 app.use("/api/wards", wardsRouter);
 app.use("/api/participants", participantRoutes);
 app.use("/api/communities", communitiesRouter);
+app.use("/api/locations", locationsRouter);
 
+const server = http.createServer(app);
+initWebSocket(server);
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))

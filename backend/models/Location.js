@@ -1,10 +1,11 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const locationSchema = new mongoose.Schema({
-  deviceId: String,
-  latitude: Number,
-  longitude: Number,
-  timestamp: { type: Date, default: Date.now },
-})
+const locationSchema = new mongoose.Schema(
+  {
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Location", locationSchema)
+module.exports = mongoose.model("Location", locationSchema);

@@ -12,7 +12,7 @@ export default function Sidebar() {
   return (
     <div className="h-screen w-64 bg-green-800 text-white fixed left-0 top-0 flex flex-col">
       {/* App Name */}
-      <h1 className="text-2xl font-bold mb-4 p-4">Waste App</h1>
+      <h1 className="text-2xl font-bold mb-4 p-4">Swachh Sathi</h1>
 
       {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-2 px-4 overflow-y-auto pb-4">
@@ -100,17 +100,6 @@ export default function Sidebar() {
               Buy & Sell
             </NavLink>
             <NavLink
-              to="/map"
-              end
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md transition ${
-                  isActive ? "bg-green-600" : "hover:bg-green-700"
-                }`
-              }
-            >
-              Map
-            </NavLink>
-            <NavLink
               to="/complaints"
               end
               className={({ isActive }) =>
@@ -122,7 +111,7 @@ export default function Sidebar() {
               Complaints
             </NavLink>
             <NavLink
-              to="/tracking"
+              to="/mappage"
               end
               className={({ isActive }) =>
                 `px-3 py-2 rounded-md transition ${
@@ -145,17 +134,6 @@ export default function Sidebar() {
             </NavLink>
 
             {/* Committee Pages */}
-            <NavLink
-              to="/citizen-form"
-              end
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md transition ${
-                  isActive ? "bg-green-600" : "hover:bg-green-700"
-                }`
-              }
-            >
-              Citizen Form
-            </NavLink>
             <NavLink
               to="/admin"
               end
@@ -180,7 +158,7 @@ export default function Sidebar() {
             </NavLink>
 
             <NavLink
-              to="/userCommunity"
+              to="/userCommunity/:id"
               end
               className={({ isActive }) =>
                 `px-3 py-2 rounded-md transition ${
