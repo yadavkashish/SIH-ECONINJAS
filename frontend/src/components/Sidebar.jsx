@@ -57,7 +57,7 @@ export default function Sidebar() {
         ) : (
           <>
             <NavLink
-              to="/account"
+              to="/profile"
               className={({ isActive }) =>
                 `px-3 py-2 rounded-md transition ${
                   isActive ? "bg-green-600" : "hover:bg-green-700"
@@ -177,6 +177,18 @@ export default function Sidebar() {
               }
             >
               Municipal Dashboard
+            </NavLink>
+
+            <NavLink
+              to="/userCommunity"
+              end
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md transition ${
+                  isActive ? "bg-green-600" : "hover:bg-green-700"
+                }`
+              }
+            >
+              User Community
             </NavLink>
 
             {/* Logout button */}

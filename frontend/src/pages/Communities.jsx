@@ -1,144 +1,84 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Users } from 'lucide-react';
-import { Input } from '../components/ui/Input';
-import { CommunityCard } from '../components/Community-card';
-import { Recommendations } from '../components/Recommendations';
-import { useToast } from '../hooks/use-toast';
-import { mockCommunities } from '../data/community-mockData'; // <-- imported mock data
+// src/pages/Communities.jsx
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Users } from "lucide-react";
 
 export default function Communities() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [joinedCommunityIds, setJoinedCommunityIds] = useState(new Set(['3']));
-  const [pendingCommunityIds, setPendingCommunityIds] = useState(new Set());
-  const { toast } = useToast();
+  const [communities, setCommunities] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filtered, setFiltered] = useState([]);
 
-  const handleToggleJoin = (id) => {
-    setJoinedCommunityIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-        return newSet;
-      }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch(`${import.meta.env.VITE_API_URL}/api/communities?city=Ghaziabad`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setCommunities(data.communities || []);
+        setFiltered(data.communities || []);
+      })
+      .catch(err => console.error(err));
+  }, []);
 
-      setPendingCommunityIds(pendingPrev => {
-        const newPendingSet = new Set(pendingPrev);
-        if (!newPendingSet.has(id)) {
-          newPendingSet.add(id);
-          toast({
-            title: "Request Sent",
-            description: "Your request to join this community has been sent to the admin for approval.",
-          });
-        }
-        return newPendingSet;
-      });
-
-      return newSet;
-    });
-  };
-
-  const filteredCommunities = useMemo(() => {
-    if (!searchTerm) return mockCommunities;
-    return mockCommunities.filter(community =>
-      community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      community.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      community.category.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    const q = search.toLowerCase();
+    const filteredList = communities.filter(
+      c =>
+        c.name.toLowerCase().includes(q) ||
+        c.wardNumber.toString().includes(q)
     );
-  }, [searchTerm]);
-
-  const showRecommendations = joinedCommunityIds.size < 2;
+    setFiltered(filteredList);
+  }, [search, communities]);
 
   return (
-    <div className="min-h-screen bg-[hsl(38,52%,94%)] bg-background">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-2">
-              <div className="bg-secondary bg-[hsl(142,41%,30%)] p-2 rounded-lg">
-                <Users className="h-6 w-6 text-white text-secondary-foreground" />
+    <div className="min-h-screen bg-gray-50 p-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10 gap-4">
+        <h1 className="text-4xl font-bold text-gray-900">Communities in Ghaziabad</h1>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search by name or ward number..."
+          className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:outline-none shadow-sm w-full sm:w-80"
+        />
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-gray-500 text-center mt-8 text-lg">No communities found.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filtered.map(c => (
+            <div
+              key={c._id}
+              className="bg-white rounded-2xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 p-6 flex flex-col justify-between"
+            >
+              <div className="flex items-center mb-6">
+                <div className="bg-blue-100 text-green-950 rounded-full p-3 mr-4">
+                  <Users size={28} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">{c.name}</h2>
+                  <p className="text-sm text-gray-500 mt-1">{c.city}</p>
+                </div>
               </div>
-              <h1 className="text-2xl font-bold font-headline text-[hsl(142,41%,30%)] text-secondary">EcoConnect</h1>
+
+              <div className="flex items-center justify-between mt-4">
+                <span className="text-sm font-medium text-green-900 bg-blue-100 px-4 py-1 rounded-full">
+                  Ward #{c.wardNumber}
+                </span>
+                <Link
+                  to={`/community/${c._id}`}
+                  className="bg-green-950 hover:bg-green-900 transition text-white font-medium px-5 py-2 rounded-full"
+                >
+                  Open
+                </Link>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-7xl mx-auto">
-          <section className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl text-[hsl(142,41%,30%)] font-bold font-headline text-secondary tracking-tight">
-              Connect with your Local Eco-Community
-            </h2>
-            <p className="mt-4 max-w-2xl text-gray-500 mx-auto text-lg text-muted-foreground">
-              Discover, join, and participate in sustainability-focused groups near you.
-            </p>
-          </section>
-
-          <section className="mb-12">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 text-gray-400 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search for communities by name, interest, or category..."
-                className="w-full pl-12 h-12 text-lg rounded-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </section>
-
-          {showRecommendations && (
-            <section className="mb-16">
-              <Recommendations joinedCommunityIds={joinedCommunityIds} onToggleJoin={handleToggleJoin} />
-            </section>
-          )}
-
-          <section>
-            <h2 className="text-3xl font-headline font-bold mb-6">
-              {searchTerm ? `Results for "${searchTerm}"` : "Explore Communities"}
-            </h2>
-            {filteredCommunities.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCommunities.map(community => {
-                  const isJoined = joinedCommunityIds.has(community.id);
-                  const cardContent = (
-                    <CommunityCard
-                      community={community}
-                      isJoined={isJoined}
-                      isPending={pendingCommunityIds.has(community.id)}
-                      onToggleJoin={handleToggleJoin}
-                    />
-                  );
-
-                  if (isJoined) {
-                    return (
-                      <Link key={community.id} to={`/community/${community.id}`} className="contents">
-                        {cardContent}
-                      </Link>
-                    );
-                  }
-
-                  return (
-                    <div key={community.id}>
-                      {cardContent}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-16 border-2 border-dashed rounded-lg">
-                <p className="text-muted-foreground">No communities found matching your search.</p>
-              </div>
-            )}
-          </section>
-        </div>
-      </main>
-
-      <footer className="mt-16 py-8 bg-card/50">
-        <div className="container mx-auto text-center text-muted-foreground text-sm">
-          <p>&copy; {new Date().getFullYear()} EcoConnect. All rights reserved.</p>
-        </div>
-      </footer>
+      )}
     </div>
   );
 }

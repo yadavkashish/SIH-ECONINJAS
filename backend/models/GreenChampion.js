@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const applicationSchema = new mongoose.Schema({
+const greenChampionSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   fullName: String,
   age: Number,
   gender: String,
@@ -15,8 +16,8 @@ const applicationSchema = new mongoose.Schema({
   },
   ngoName: String,
   occupation: String,
-  status: { type: String, default: "pending" }, // pending, approved, rejected
+  status: { type: String, default: "pending" },
   points: { type: Number, default: 0 },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Application", applicationSchema);
+module.exports = mongoose.model("GreenChampion", greenChampionSchema);

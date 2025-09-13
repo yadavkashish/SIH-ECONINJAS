@@ -20,8 +20,6 @@ import CertificationPage from "./pages/CertificationPage";
 import BuySell from "./pages/BuySell";
 import BuyPage from "./pages/BuyPage";
 import SellPage from "./pages/SellPage";
-import CommunityPage from "./pages/CommunityPage";
-import Communities from "./pages/Communities";
 import Tracking from "./pages/Tracking";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -29,11 +27,14 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ParticipantForm from "./components/ParticipantForm";
 
 import { ProgressProvider } from "./context/ProgressContent";
-import CitizenForm from "./components/CitizenForm";
 import AdminDashboard from "./components/AdminDashboard";
 import MunicipalDashboard from "./components/MunicipalDashboard";
 import Chatbot from "./components/Chatbot";
 import RewardsSection from "./pages/Rewards-section";
+import Communities from "./pages/Communities";
+import CommunityPage from "./pages/CommunityPage";
+import UserCommunityPage from "./pages/UserCommunityPage";
+import GreenChampionForm from "./components/GreenChampionForm";
 
 export default function App() {
   // Profile Page (Protected)
@@ -83,7 +84,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
 
             {/* Protected Routes */}
-            <Route
+            {/* <Route
               path="/account"
               element={
                 <ProtectedRoute>
@@ -98,7 +99,7 @@ export default function App() {
                   <Profile />
                 </ProtectedRoute>
               }
-            />
+            /> */}
 
             {/* Public Main Pages */}
             <Route path="/" element={<Home />} />
@@ -122,8 +123,13 @@ export default function App() {
             <Route path="/rewards" element={<RewardsSection />} />
 
             {/* Committee Pages */}
-            <Route path="/citizen-form" element={<CitizenForm />} />
+            <Route path="/green-champions" element={<GreenChampionForm />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/communities" element={<Communities />} />
+            <Route path="/community/:id" element={<CommunityPage />} />
+            <Route path="/userCommunity" element={<UserCommunityPage />} />
+            <Route path="/profile" element={<Account />} />
+
             <Route
               path="/municipal"
               element={

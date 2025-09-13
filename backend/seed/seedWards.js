@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
-const Ward = require("./models/Ward");
-const Application = require("./models/Application");
+const Ward = require("../models/Ward");
+const GreenChampion = require("../models/GreenChampion");
 
 
 dotenv.config();
@@ -30,7 +30,7 @@ const wards = [
   { city: "Ghaziabad", wardNumber: 20, name: "Madhuban Bapudham", pincodes: ["201009"], localities: ["Madhuban Bapudham"] },
 ];
 
-const applications = [
+const GreenChampions = [
   {
     fullName: "Alice",
     age: 25,
@@ -97,9 +97,9 @@ const applications = [
     await Ward.insertMany(wards);
     console.log("✅ Seeded wards");
 
-    await Application.deleteMany({ "address.city": "Ghaziabad" });
-    await Application.insertMany(applications);
-    console.log("✅ Seeded applications");
+    await GreenChampion.deleteMany({ "address.city": "Ghaziabad" });
+    await GreenChampion.insertMany(GreenChampions);
+    console.log("✅ Seeded GreenChampions");
 
     process.exit(0);
   } catch (err) {
