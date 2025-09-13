@@ -69,13 +69,32 @@ export default function MunicipalDashboard({ adminToken, city }) {
     fetchTopChampions();
   }, [city, adminToken]);
 
-  const handleAction = async (id, action) => {
-    await fetch(`http://localhost:5000/api/applications/${id}/${action}`, {
+ const handleAction = async (id, action) => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/applications/${id}/${action}`, {
       method: "POST",
-      headers: { "x-admin-token": adminToken },
+      headers: {
+        "x-admin-token": adminToken, // ✅ use the prop you pass down
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ note: "Approved via dashboard" }), // optional
     });
-    setPendingApps(pendingApps.filter((app) => app._id !== id));
-  };
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Action failed:", text);
+      return;
+    }
+
+    // Update UI
+    setPendingApps(prev => prev.filter(app => app._id !== id));
+    setReviewApp(null);
+  } catch (err) {
+    console.error("Error handling action:", err);
+  }
+};
+
+
 
   if (!summary)
     return (

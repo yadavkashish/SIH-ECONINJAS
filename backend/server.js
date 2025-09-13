@@ -6,8 +6,9 @@ const participantRoutes = require("./routes/participantRoutes");
 
 // Local imports
 const wardsRouter = require("./routes/wards");
-const applicationsRouter = require("./routes/applications");
+const greenChampion = require("./routes/greenChampion");
 const dashboardRouter = require("./routes/dashboard");
+const communitiesRouter = require("./routes/communities")
 
 // ===================== Config =====================
 dotenv.config()
@@ -45,8 +46,10 @@ app.use("/api/location", require("./routes/locationRoutes"))
 app.use("/api/chatbot", require("./routes/chatbotRoutes"))
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/dashboard", dashboardRouter);
-app.use("/api/applications", applicationsRouter);
+app.use("/api/greenChampion", greenChampion);
 app.use("/api/wards", wardsRouter);
 app.use("/api/participants", participantRoutes);
+app.use("/api/communities", communitiesRouter);
+
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))

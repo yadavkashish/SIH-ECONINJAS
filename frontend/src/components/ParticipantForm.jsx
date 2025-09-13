@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ParticipantForm = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const ParticipantForm = () => {
     role: "Normal User",
     ngoMember: false,
   });
+  const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
 
@@ -46,6 +48,8 @@ const ParticipantForm = () => {
         role: "Normal User",
         ngoMember: false,
       });
+
+      navigate("/profile");
     } catch (error) {
       console.error(error);
       setMessage("❌ Error submitting form");

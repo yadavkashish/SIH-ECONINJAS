@@ -16,7 +16,7 @@ export default function Signup() {
     try {
       const { data } = await API.post("/auth/register", form);
       localStorage.setItem("token", data.token);
-      navigate("/profile");
+      navigate("/participantsform");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
     }

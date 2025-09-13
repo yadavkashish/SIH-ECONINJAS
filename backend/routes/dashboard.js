@@ -1,6 +1,6 @@
 const express = require("express");
 const Ward = require("../models/Ward");
-const Application = require("../models/Application");
+const GreenChampion = require("../models/GreenChampion");
 
 const router = express.Router();
 const ADMIN_HEADER = "x-admin-token";
@@ -16,15 +16,15 @@ router.get("/summary", async (req, res) => {
     const wards = await Ward.find({ city });
     const totalWards = wards.length;
 
-    const allApps = await Application.find({ "address.city": city });
-    const totalApplications = allApps.length;
+    const allApps = await GreenChampion.find({ "address.city": city });
+    const totalGreenChampions = allApps.length;
     const approved = allApps.filter((a) => a.status === "approved").length;
     const pending = allApps.filter((a) => a.status === "pending").length;
     const rejected = allApps.filter((a) => a.status === "rejected").length;
 
     res.json({
       totalWards,
-      totalApplications,
+      totalGreenChampions,
       approved,
       pending,
       rejected,
@@ -51,12 +51,12 @@ router.get("/wards", async (req, res) => {
 
     const wardsWithStats = await Promise.all(
       wards.map(async (w) => {
-        const champions = await Application.countDocuments({
+        const champions = await GreenChampion.countDocuments({
           "address.selectedWard": w.wardNumber,
           "address.city": city,
           status: "approved",
         });
-        const pendingRequests = await Application.countDocuments({
+        const pendingRequests = await GreenChampion.countDocuments({
           "address.selectedWard": w.wardNumber,
           "address.city": city,
           status: "pending",
@@ -95,7 +95,7 @@ router.get("/top-champions", async (req, res) => {
       return res.status(401).json({ error: "unauthorized" });
 
     const { city, limit = 10 } = req.query;
-    const top = await Application.find({
+    const top = await GreenChampion.find({
       "address.city": city,
       status: "approved",
     })
