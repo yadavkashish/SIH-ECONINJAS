@@ -1,5 +1,5 @@
-// src/pages/CommunityPage.jsx
-import React, { useEffect, useState, useContext } from "react";
+// src/pages/UserCommunityPage.jsx
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -19,7 +19,6 @@ export default function UserCommunityPage() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-
         if (!res.ok) throw new Error("Failed to fetch community");
         const data = await res.json();
         setCommunity(data.community);
@@ -27,7 +26,7 @@ export default function UserCommunityPage() {
         console.error(err);
       }
     }
-    fetchCommunity();
+    if (id) fetchCommunity();
   }, [id]);
 
   if (!community)
@@ -54,7 +53,7 @@ export default function UserCommunityPage() {
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             />
             <Marker position={[community.latitude, community.longitude]}>
               <Popup>{community.name}</Popup>
@@ -63,7 +62,7 @@ export default function UserCommunityPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard
           icon={<Users size={24} />}
@@ -110,7 +109,7 @@ export default function UserCommunityPage() {
                 <tr key={c._id} className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 border">{c.fullName}</td>
                   <td className="p-2 border text-center">
-                    {c.address.selectedWard}
+                    {c.address?.selectedWard}
                   </td>
                   <td className="p-2 border text-center">{c.points || 0}</td>
                 </tr>
@@ -120,7 +119,7 @@ export default function UserCommunityPage() {
         </div>
       </div>
 
-      {/* Complaints Table */}
+      {/* Complaints */}
       <div className="bg-white p-4 rounded-xl shadow">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">
           Complaints / Requests
@@ -176,12 +175,9 @@ export default function UserCommunityPage() {
   );
 }
 
-// Reusable StatCard
 function StatCard({ icon, title, value, color }) {
   return (
-    <div
-      className={`bg-white p-4 rounded-xl shadow flex items-center gap-4 hover:shadow-lg transition`}
-    >
+    <div className="bg-white p-4 rounded-xl shadow flex items-center gap-4 hover:shadow-lg transition">
       <div className={`p-3 rounded-lg bg-${color}-100 text-${color}-600`}>
         {icon}
       </div>

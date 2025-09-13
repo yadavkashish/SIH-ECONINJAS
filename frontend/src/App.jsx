@@ -8,7 +8,6 @@ import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Account from "./pages/Account";
 import Complaints from "./pages/Complaints";
-import Map from "./pages/Map";
 import Modules from "./pages/Modules";
 import VideoPage from "./pages/VideoPage";
 import ContentPage from "./pages/ContentPage";
@@ -35,6 +34,7 @@ import Communities from "./pages/Communities";
 import CommunityPage from "./pages/CommunityPage";
 import UserCommunityPage from "./pages/UserCommunityPage";
 import GreenChampionForm from "./components/GreenChampionForm";
+import MapPage from "./pages/MapPage";
 
 export default function App() {
   // Profile Page (Protected)
@@ -108,7 +108,6 @@ export default function App() {
             <Route path="/communities" element={<Communities />} />
             <Route path="/community/:id" element={<CommunityPage />} />
             <Route path="/complaints" element={<Complaints />} />
-            <Route path="/map" element={<Map />} />
             <Route path="/buy" element={<BuyPage />} />
             <Route path="/sell" element={<SellPage />} />
             <Route path="/modules" element={<Modules />} />
@@ -127,8 +126,11 @@ export default function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="/community/:id" element={<CommunityPage />} />
-            <Route path="/userCommunity" element={<UserCommunityPage />} />
+            <Route path="/userCommunity/:id" element={<UserCommunityPage />} />
             <Route path="/profile" element={<Account />} />
+
+            {/* Tracking */}
+            <Route path="/mappage" element={<MapPage />} />
 
             <Route
               path="/municipal"
