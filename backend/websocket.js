@@ -11,21 +11,21 @@ function initWebSocket(server) {
 
     ws.on("message", async (message) => {
       try {
-        const data = JSON.parse(message);
-        const { deviceId, lat, lng } = data;
+        const { lat, lng } = JSON.parse(message);
 
-        if (!deviceId || lat === undefined || lng === undefined) return;
+        if (lat === undefined || lng === undefined) return;
 
+        // Always update the single vehicle document
         await Location.findOneAndUpdate(
-          { deviceId },
+          { deviceId: "vehicle-1" },
           { lat, lng, updatedAt: new Date() },
           { upsert: true, new: true }
         );
 
-        // Broadcast to all connected frontend clients
+        // Broadcast to all clients
         wss.clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ deviceId, lat, lng }));
+            client.send(JSON.stringify({ lat, lng }));
           }
         });
       } catch (err) {

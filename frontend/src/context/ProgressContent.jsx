@@ -45,16 +45,6 @@ export const ProgressProvider = ({ children }) => {
     Math.round((completedSteps.length / (totalSteps || 1)) * 100)
   );
 
-  // debug missing steps
-  useEffect(() => {
-    console.log("✅ Total steps:", totalSteps);
-    console.log("✅ Completed steps:", completedSteps.length);
-    console.log(
-      "❌ Missing steps:",
-      allStepIds.filter((id) => !completedSteps.includes(id))
-    );
-  }, [completedSteps, totalSteps]);
-
   return (
     <ProgressContext.Provider
       value={{
