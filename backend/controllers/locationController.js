@@ -1,25 +1,18 @@
 const Location = require("../models/Location");
 
-// Save location (latest coordinates)
+// Save location (if you also post via REST)
 exports.saveLocation = async (req, res) => {
   try {
     const { lat, lng } = req.body;
 
     if (lat === undefined || lng === undefined) {
-      return res.status(400).json({ message: "Missing fields" });
+      return res.status(400).json({ error: "lat and lng required" });
     }
 
-    // Upsert: keep only one record for latest vehicle location
-    const location = await Location.findOneAndUpdate(
-      {}, // no deviceId
-      { lat, lng, updatedAt: new Date() },
-      { upsert: true, new: true }
-    );
-
-    res.json(location);
+    const newLocation = await Location.create({ lat, lng });
+    res.json(newLocation);
   } catch (err) {
-    console.error("Error saving location:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -34,13 +27,15 @@ exports.getLocation = async (req, res) => {
   }
 };
 
-// Get location history
+// Get last 50 points for drawing path
 exports.getLocations = async (req, res) => {
   try {
-    const locations = await Location.find().sort({ createdAt: -1 }).limit(50);
-    res.json(locations);
+    const locations = await Location.find()
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.json(locations.reverse()); // send oldest → newest
   } catch (err) {
-    console.error("Error fetching locations:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ error: err.message });
   }
 };

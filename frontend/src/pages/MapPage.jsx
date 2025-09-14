@@ -10,7 +10,7 @@ import {
 import L from "leaflet";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
-// Fix default marker icon issue
+// Fix default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -19,27 +19,21 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-// ✅ Component to smoothly fly map to new coords
+// Fly map to coordinates
 const FlyToLocation = ({ coords }) => {
   const map = useMap();
   useEffect(() => {
-    if (coords) {
-      map.flyTo(coords, 15);
-    }
+    if (coords) map.flyTo(coords, 15);
   }, [coords, map]);
   return null;
 };
 
-// ✅ Animated marker (updates smoothly)
+// Animated marker
 const AnimatedMarker = ({ position }) => {
   const markerRef = useRef(null);
-
   useEffect(() => {
-    if (markerRef.current) {
-      markerRef.current.setLatLng(position);
-    }
+    if (markerRef.current) markerRef.current.setLatLng(position);
   }, [position]);
-
   return (
     <Marker ref={markerRef} position={position}>
       <Popup>
@@ -55,83 +49,96 @@ const MapPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const ws = useRef(null);
-
-  const API_URL = import.meta.env.VITE_API_URL;
   const provider = new OpenStreetMapProvider();
 
-  // Helper to normalize lat/lng keys
-  const getCoords = (obj) => {
-    const lat = obj.lat ?? obj.latitude ?? null;
-    const lng = obj.lng ?? obj.longitude ?? null;
-    return lat != null && lng != null ? [lat, lng] : null;
-  };
-
   useEffect(() => {
-    // Determine protocol (wss for https, ws for http)
-    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    let receivedWS = false;
 
-    // Use backend URL from env; remove protocol to get host
-    const wsHost =
-      import.meta.env.VITE_API_URL?.replace(/^https?:\/\//, "") ||
-      "localhost:5000";
-
-    // Connect to backend WS
-    ws.current = new WebSocket(`${wsProtocol}://${wsHost}/ws`);
-
-    ws.current.onopen = () => console.log("✅ WS Connected to backend");
-
-    ws.current.onmessage = (event) => {
+    const searchKIET = async () => {
       try {
-        const { lat, lng } = JSON.parse(event.data);
-        if (lat !== undefined && lng !== undefined) {
-          const coords = [lat, lng];
+        const results = await provider.search({ query: "KIET Ghaziabad" });
+        if (results.length > 0) {
+          const { y, x } = results[0];
+          const coords = [y, x];
           setCurrentLocation(coords);
-          setHistory((prev) => [...prev.slice(-99), coords]);
+          console.log("📍 Fallback: Centered on KIET Ghaziabad");
+        } else {
+          console.error("❌ KIET Ghaziabad not found via search");
         }
       } catch (err) {
-        console.error("❌ Failed to parse WS message:", event.data);
+        console.error("❌ Search failed:", err);
       }
     };
 
-    ws.current.onclose = () => console.log("❌ WS Closed");
-    ws.current.onerror = (err) => console.error("❌ WS Error", err);
+    // 1️⃣ Try WebSocket first
+    if (import.meta.env.VITE_WS_URL) {
+      ws.current = new WebSocket(import.meta.env.VITE_WS_URL);
 
-    // Fetch initial history from backend
-    fetch(`${import.meta.env.VITE_API_URL}/api/locations`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!Array.isArray(data)) return;
-        const coords = data
-          .map((loc) =>
-            loc.lat !== undefined && loc.lng !== undefined
-              ? [loc.lat, loc.lng]
-              : null
-          )
-          .filter((c) => c !== null);
-        setHistory(coords);
-        if (coords.length > 0) setCurrentLocation(coords[0]);
-      })
-      .catch((err) => console.error("❌ Failed to fetch history:", err));
+      ws.current.onopen = () => console.log("✅ WS Connected");
 
-    return () => ws.current?.close();
+      ws.current.onmessage = (event) => {
+        try {
+          const { lat, lng } = JSON.parse(event.data);
+          if (lat !== undefined && lng !== undefined) {
+            receivedWS = true;
+            const coords = [lat, lng];
+            setCurrentLocation(coords);
+            setHistory((prev) => [...prev.slice(-99), coords]);
+          }
+        } catch (err) {
+          console.error("❌ WS message parse error:", event.data);
+        }
+      };
+
+      ws.current.onclose = () => console.log("❌ WS Closed");
+      ws.current.onerror = () => console.error("❌ WS Error, falling back to GPS/Search");
+    }
+
+    // 2️⃣ Fallback: browser geolocation or hidden search
+    const fallback = setTimeout(() => {
+      if (!receivedWS && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const coords = [pos.coords.latitude, pos.coords.longitude];
+            setCurrentLocation(coords);
+            console.log("📍 Using browser geolocation");
+          },
+          () => {
+            searchKIET(); // hidden fallback search
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      } else if (!receivedWS) {
+        searchKIET(); // hidden fallback search
+      }
+    }, 2000);
+
+    return () => {
+      ws.current?.close();
+      clearTimeout(fallback);
+    };
   }, []);
 
-  // Search handler
+  // Manual search handler
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    const results = await provider.search({ query: searchQuery });
-    if (results.length > 0) {
-      const { y, x } = results[0];
-      setSearchResult([y, x]);
-    } else {
-      alert("No results found");
+    try {
+      const results = await provider.search({ query: searchQuery });
+      if (results.length > 0) {
+        const { y, x } = results[0];
+        setSearchResult([y, x]);
+      } else {
+        alert("No results found");
+      }
+    } catch (err) {
+      console.error("❌ Search error:", err);
     }
   };
 
   return (
     <div style={{ height: "85vh", width: "100%", position: "relative" }}>
-      {/* 🔍 Search bar */}
+      {/* Search bar */}
       <form
         onSubmit={handleSearch}
         style={{
@@ -181,27 +188,19 @@ const MapPage = () => {
       {/* Map */}
       {currentLocation ? (
         <MapContainer
-          center={currentLocation} // ✅ No default fallback
+          center={currentLocation}
           zoom={15}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-          {/* Live GPS Marker */}
           <AnimatedMarker position={currentLocation} />
-
-          {/* Path history */}
           {history.length > 1 && <Polyline positions={history} color="blue" />}
-
-          {/* Fly to searched location */}
           {searchResult && <FlyToLocation coords={searchResult} />}
           {searchResult && (
             <Marker position={searchResult}>
               <Popup>🔍 Search Result</Popup>
             </Marker>
           )}
-
-          {/* Fly to GPS automatically */}
           <FlyToLocation coords={currentLocation} />
         </MapContainer>
       ) : (
@@ -215,12 +214,12 @@ const MapPage = () => {
             color: "#555",
           }}
         >
-          ⏳ Waiting for GPS location from device...
+          ⏳ Waiting for coordinates...
         </div>
       )}
 
       {/* Coordinates overlay */}
-      {currentLocation ? (
+      {currentLocation && (
         <div
           style={{
             position: "absolute",
@@ -234,24 +233,7 @@ const MapPage = () => {
             zIndex: 1000,
           }}
         >
-          📍 Lat: {currentLocation[0].toFixed(5)}, Lng:{" "}
-          {currentLocation[1].toFixed(5)}
-        </div>
-      ) : (
-        <div
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            left: "10px",
-            background: "white",
-            padding: "6px 12px",
-            borderRadius: "6px",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-            fontSize: "14px",
-            zIndex: 1000,
-          }}
-        >
-          ⏳ Waiting for location...
+          📍 Lat: {currentLocation[0].toFixed(5)}, Lng: {currentLocation[1].toFixed(5)}
         </div>
       )}
     </div>

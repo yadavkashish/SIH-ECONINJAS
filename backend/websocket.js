@@ -12,15 +12,12 @@ function initWebSocket(server) {
     ws.on("message", async (message) => {
       try {
         const { lat, lng } = JSON.parse(message);
-
         if (lat === undefined || lng === undefined) return;
 
-        // Always update the single vehicle document
-        await Location.findOneAndUpdate(
-          { deviceId: "vehicle-1" },
-          { lat, lng, updatedAt: new Date() },
-          { upsert: true, new: true }
-        );
+        // Save location to DB
+        await Location.create({ lat, lng });
+
+        console.log("Sending coords to client:", lat, lng);
 
         // Broadcast to all clients
         wss.clients.forEach((client) => {
@@ -32,6 +29,8 @@ function initWebSocket(server) {
         console.error("Invalid WS message:", err.message);
       }
     });
+
+    ws.on("close", () => console.log("❌ WebSocket client disconnected"));
   });
 
   console.log("✅ WebSocket server initialized at /ws");
