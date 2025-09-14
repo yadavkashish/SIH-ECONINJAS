@@ -23,22 +23,28 @@ useEffect(() => {
   ws.current = new WebSocket(`${API_URL.replace(/^http/, "ws")}/ws`);
 
   ws.current.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+  const data = JSON.parse(event.data);
+  if (data.lat != null && data.lng != null) {
     setCurrentLocation([data.lat, data.lng]);
-    setHistory((prev) => [...prev, [data.lat, data.lng]]);
-  };
+    setHistory((prev) => [...prev.slice(-99), [data.lat, data.lng]]);
+  } else {
+    console.warn("⚠️ Invalid location data received:", data);
+  }
+};
 
   ws.current.onopen = () => console.log("WebSocket connected");
   ws.current.onclose = () => console.log("WebSocket disconnected");
 
   // Fetch initial location history from backend
   fetch(`${API_URL}/api/locations/history`)
-    .then((res) => res.json())
-    .then((data) => {
-      const coords = data.map((loc) => [loc.lat, loc.lng]);
-      setHistory(coords);
-      if (coords.length > 0) setCurrentLocation(coords[0]);
-    });
+  .then((res) => res.json())
+  .then((data) => {
+    const coords = data
+      .filter((loc) => loc.lat != null && loc.lng != null)
+      .map((loc) => [loc.lat, loc.lng]);
+    setHistory(coords);
+    if (coords.length > 0) setCurrentLocation(coords[coords.length - 1]);
+  });
 
   return () => ws.current.close();
 }, []);
