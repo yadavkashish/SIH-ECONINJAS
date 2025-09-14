@@ -15,14 +15,10 @@ function initWebSocket(server) {
 
         if (lat === undefined || lng === undefined) return;
 
-        // Always update the single vehicle document
-        await Location.findOneAndUpdate(
-          { deviceId: "vehicle-1" },
-          { lat, lng, updatedAt: new Date() },
-          { upsert: true, new: true }
-        );
+        // ✅ Always save a new coordinate
+        await Location.create({ lat, lng });
 
-        // Broadcast to all clients
+        // Broadcast to all connected clients
         wss.clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify({ lat, lng }));
