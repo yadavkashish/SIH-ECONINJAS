@@ -23,19 +23,21 @@ const app = express();
 // ===================== Middleware =====================
 const allowedOrigins = [
   "https://econinjas.netlify.app", // deployed frontend
-  "http://localhost:5173"           // local frontend
+  "http://localhost:5173", // local frontend
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -67,20 +69,19 @@ function initWebSocket(server) {
     ws.on("message", async (message) => {
       try {
         const data = JSON.parse(message);
-        const { deviceId, lat, lng } = data;
-
-        if (!deviceId || lat === undefined || lng === undefined) return;
+        const { lat, lng } = data;
+        if (lat === undefined || lng === undefined) return;
 
         await Location.findOneAndUpdate(
-          { deviceId },
+          { singleVehicle: true }, // single document for this vehicle
           { lat, lng, updatedAt: new Date() },
           { upsert: true, new: true }
         );
 
-        // Broadcast to all connected clients
+        // Broadcast
         wss.clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ deviceId, lat, lng }));
+            client.send(JSON.stringify({ lat, lng }));
           }
         });
       } catch (err) {
@@ -97,4 +98,6 @@ const server = http.createServer(app);
 initWebSocket(server);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`✅ Server + WS running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`✅ Server + WS running on port ${PORT}`)
+);
