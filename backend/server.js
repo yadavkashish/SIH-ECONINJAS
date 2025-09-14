@@ -53,6 +53,7 @@ app.use("/api/greenChampion", greenChampion);
 app.use("/api/wards", wardsRouter);
 app.use("/api/participants", participantRoutes);
 app.use("/api/communities", communitiesRouter);
+app.use("/api/locations", require("./routes/locationRoutes"));
 app.use("/api/locations", locationsRouter);
 
 const server = http.createServer(app);

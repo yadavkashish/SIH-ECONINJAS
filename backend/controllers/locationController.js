@@ -1,26 +1,48 @@
-const Location = require("../models/Location")
+const Location = require("../models/Location");
 
-const saveLocation = async (req, res) => {
+// Save location (upsert by deviceId)
+exports.saveLocation = async (req, res) => {
   try {
-    const { deviceId, latitude, longitude } = req.body
-    await Location.findOneAndUpdate(
+    const { deviceId, lat, lng } = req.body;
+
+    if (!deviceId || lat === undefined || lng === undefined) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
+
+    const location = await Location.findOneAndUpdate(
       { deviceId },
-      { latitude, longitude, timestamp: new Date() },
-      { upsert: true }
-    )
-    res.json({ success: true })
-  } catch (err) {
-    res.status(500).json({ error: "Failed to save location" })
-  }
-}
+      { lat, lng, updatedAt: new Date() },
+      { upsert: true, new: true }
+    );
 
-const getLocations = async (req, res) => {
+    res.json(location);
+  } catch (err) {
+    console.error("Error saving location:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get latest location by deviceId
+exports.getLocation = async (req, res) => {
   try {
-    const locations = await Location.find({})
-    res.json(locations)
+    const { deviceId } = req.params;
+    const location = await Location.findOne({ deviceId }).sort({ updatedAt: -1 });
+    res.json(location);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch locations" })
+    console.error("Error fetching location:", err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-module.exports = { saveLocation, getLocations }
+// Get location history
+exports.getLocations = async (req, res) => {
+  try {
+    const { deviceId } = req.query;
+    const filter = deviceId ? { deviceId } : {};
+    const locations = await Location.find(filter).sort({ createdAt: -1 }).limit(50);
+    res.json(locations);
+  } catch (err) {
+    console.error("Error fetching locations:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

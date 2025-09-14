@@ -3,35 +3,38 @@ const Location = require("./models/Location");
 
 let wss;
 
-const initWebSocket = (server) => {
+function initWebSocket(server) {
   wss = new WebSocket.Server({ server, path: "/ws" });
 
   wss.on("connection", (ws) => {
-    console.log("🔌 Client connected (ESP32 or Frontend)");
+    console.log("⚡ New WebSocket client connected");
 
     ws.on("message", async (message) => {
       try {
-        const data = JSON.parse(message.toString());
+        const data = JSON.parse(message);
+        const { deviceId, lat, lng } = data;
 
-        if (data.lat && data.lng) {
-          const location = new Location({ lat: data.lat, lng: data.lng });
-          await location.save();
+        if (!deviceId || lat === undefined || lng === undefined) return;
 
-          console.log("📍 Received & saved:", data);
+        await Location.findOneAndUpdate(
+          { deviceId },
+          { lat, lng, updatedAt: new Date() },
+          { upsert: true, new: true }
+        );
 
-          wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify(data));
-            }
-          });
-        }
+        // Broadcast to all connected frontend clients
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ deviceId, lat, lng }));
+          }
+        });
       } catch (err) {
-        console.error("⚠️ Invalid message:", message);
+        console.error("Invalid WS message:", err.message);
       }
     });
-
-    ws.on("close", () => console.log("❌ Client disconnected"));
   });
-};
+
+  console.log("✅ WebSocket server initialized at /ws");
+}
 
 module.exports = { initWebSocket };
