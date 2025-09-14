@@ -57,5 +57,6 @@ app.use("/api/locations", locationsRouter);
 
 const server = http.createServer(app);
 initWebSocket(server);
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`✅ Server + WS running on port ${PORT}`));
