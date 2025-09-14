@@ -179,30 +179,45 @@ const MapPage = () => {
       </form>
 
       {/* Map */}
-      <MapContainer
-        center={currentLocation || [28.7041, 77.1025]}
-        zoom={15}
-        style={{ height: "100%", width: "100%" }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {currentLocation ? (
+        <MapContainer
+          center={currentLocation} // ✅ No default fallback
+          zoom={15}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* Live GPS Marker */}
-        {currentLocation && <AnimatedMarker position={currentLocation} />}
+          {/* Live GPS Marker */}
+          <AnimatedMarker position={currentLocation} />
 
-        {/* Path history */}
-        {history.length > 1 && <Polyline positions={history} color="blue" />}
+          {/* Path history */}
+          {history.length > 1 && <Polyline positions={history} color="blue" />}
 
-        {/* Fly to searched location */}
-        {searchResult && <FlyToLocation coords={searchResult} />}
-        {searchResult && (
-          <Marker position={searchResult}>
-            <Popup>🔍 Search Result</Popup>
-          </Marker>
-        )}
+          {/* Fly to searched location */}
+          {searchResult && <FlyToLocation coords={searchResult} />}
+          {searchResult && (
+            <Marker position={searchResult}>
+              <Popup>🔍 Search Result</Popup>
+            </Marker>
+          )}
 
-        {/* Fly to GPS automatically */}
-        {currentLocation && <FlyToLocation coords={currentLocation} />}
-      </MapContainer>
+          {/* Fly to GPS automatically */}
+          <FlyToLocation coords={currentLocation} />
+        </MapContainer>
+      ) : (
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "18px",
+            color: "#555",
+          }}
+        >
+          ⏳ Waiting for GPS location from device...
+        </div>
+      )}
 
       {/* Coordinates overlay */}
       {currentLocation ? (
