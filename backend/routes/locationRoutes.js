@@ -1,26 +1,18 @@
 const express = require("express");
-const Location = require("../models/Location");
-
 const router = express.Router();
+const {
+  saveLocation,
+  getLocation,
+  getLocations,
+} = require("../controllers/locationController");
 
-// Get latest location
-router.get("/latest", async (req, res) => {
-  try {
-    const latest = await Location.findOne().sort({ createdAt: -1 });
-    res.json(latest || {});
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// POST /api/locations → save location
+router.post("/", saveLocation);
 
-// Get history
-router.get("/history", async (req, res) => {
-  try {
-    const history = await Location.find().sort({ createdAt: -1 }).limit(50);
-    res.json(history);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// GET /api/locations?deviceId=ESP32-01 → history
+router.get("/", getLocations);
+
+// GET /api/locations/:deviceId → latest location
+router.get("/:deviceId", getLocation);
 
 module.exports = router;
