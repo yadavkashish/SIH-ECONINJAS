@@ -67,13 +67,24 @@ const MapPage = () => {
   };
 
   useEffect(() => {
-    ws.current = new WebSocket(`${API_URL.replace(/^http/, "ws")}/ws`);
+    // Determine protocol (wss for https, ws for http)
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+
+    // Use backend URL from env; remove protocol to get host
+    const wsHost =
+      import.meta.env.VITE_API_URL?.replace(/^https?:\/\//, "") ||
+      "localhost:5000";
+
+    // Connect to backend WS
+    ws.current = new WebSocket(`${wsProtocol}://${wsHost}/ws`);
+
+    ws.current.onopen = () => console.log("✅ WS Connected to backend");
 
     ws.current.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data);
-        const coords = getCoords(data);
-        if (coords) {
+        const { lat, lng } = JSON.parse(event.data);
+        if (lat !== undefined && lng !== undefined) {
+          const coords = [lat, lng];
           setCurrentLocation(coords);
           setHistory((prev) => [...prev.slice(-99), coords]);
         }
@@ -82,16 +93,27 @@ const MapPage = () => {
       }
     };
 
-    fetch(`${API_URL}/api/locations/history`)
+    ws.current.onclose = () => console.log("❌ WS Closed");
+    ws.current.onerror = (err) => console.error("❌ WS Error", err);
+
+    // Fetch initial history from backend
+    fetch(`${import.meta.env.VITE_API_URL}/api/locations`)
       .then((res) => res.json())
       .then((data) => {
-        const coords = data.map((loc) => getCoords(loc)).filter((c) => c !== null);
+        if (!Array.isArray(data)) return;
+        const coords = data
+          .map((loc) =>
+            loc.lat !== undefined && loc.lng !== undefined
+              ? [loc.lat, loc.lng]
+              : null
+          )
+          .filter((c) => c !== null);
         setHistory(coords);
-        if (coords.length > 0) setCurrentLocation(coords[coords.length - 1]);
+        if (coords.length > 0) setCurrentLocation(coords[0]);
       })
       .catch((err) => console.error("❌ Failed to fetch history:", err));
 
-    return () => ws.current.close();
+    return () => ws.current?.close();
   }, []);
 
   // Search handler
@@ -172,7 +194,11 @@ const MapPage = () => {
 
         {/* Fly to searched location */}
         {searchResult && <FlyToLocation coords={searchResult} />}
-        {searchResult && <Marker position={searchResult}><Popup>🔍 Search Result</Popup></Marker>}
+        {searchResult && (
+          <Marker position={searchResult}>
+            <Popup>🔍 Search Result</Popup>
+          </Marker>
+        )}
 
         {/* Fly to GPS automatically */}
         {currentLocation && <FlyToLocation coords={currentLocation} />}
@@ -193,7 +219,8 @@ const MapPage = () => {
             zIndex: 1000,
           }}
         >
-          📍 Lat: {currentLocation[0].toFixed(5)}, Lng: {currentLocation[1].toFixed(5)}
+          📍 Lat: {currentLocation[0].toFixed(5)}, Lng:{" "}
+          {currentLocation[1].toFixed(5)}
         </div>
       ) : (
         <div

@@ -1,16 +1,17 @@
 const Location = require("../models/Location");
 
-// Save location (upsert by deviceId)
+// Save location (latest coordinates)
 exports.saveLocation = async (req, res) => {
   try {
-    const { deviceId, lat, lng } = req.body;
+    const { lat, lng } = req.body;
 
-    if (!deviceId || lat === undefined || lng === undefined) {
+    if (lat === undefined || lng === undefined) {
       return res.status(400).json({ message: "Missing fields" });
     }
 
+    // Upsert: keep only one record for latest vehicle location
     const location = await Location.findOneAndUpdate(
-      { deviceId },
+      {}, // no deviceId
       { lat, lng, updatedAt: new Date() },
       { upsert: true, new: true }
     );
@@ -22,11 +23,10 @@ exports.saveLocation = async (req, res) => {
   }
 };
 
-// Get latest location by deviceId
+// Get latest location
 exports.getLocation = async (req, res) => {
   try {
-    const { deviceId } = req.params;
-    const location = await Location.findOne({ deviceId }).sort({ updatedAt: -1 });
+    const location = await Location.findOne().sort({ updatedAt: -1 });
     res.json(location);
   } catch (err) {
     console.error("Error fetching location:", err);
@@ -37,9 +37,7 @@ exports.getLocation = async (req, res) => {
 // Get location history
 exports.getLocations = async (req, res) => {
   try {
-    const { deviceId } = req.query;
-    const filter = deviceId ? { deviceId } : {};
-    const locations = await Location.find(filter).sort({ createdAt: -1 }).limit(50);
+    const locations = await Location.find().sort({ createdAt: -1 }).limit(50);
     res.json(locations);
   } catch (err) {
     console.error("Error fetching locations:", err);

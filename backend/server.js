@@ -1,4 +1,4 @@
-// server.js
+// ===================== Imports =====================
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
@@ -23,19 +23,21 @@ const app = express();
 // ===================== Middleware =====================
 const allowedOrigins = [
   "https://econinjas.netlify.app", // deployed frontend
-  "http://localhost:5173"           // local frontend
+  "http://localhost:5173", // local frontend
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -56,23 +58,20 @@ app.use("/api/communities", communitiesRouter);
 app.use("/api/locations", locationsRouter);
 
 // ===================== WebSocket Setup =====================
-let wss;
-
 function initWebSocket(server) {
-  wss = new WebSocket.Server({ server, path: "/ws" });
+  const wss = new WebSocket.Server({ server, path: "/ws" });
 
   wss.on("connection", (ws) => {
     console.log("⚡ New WebSocket client connected");
 
     ws.on("message", async (message) => {
       try {
-        const data = JSON.parse(message);
-        const { deviceId, lat, lng } = data;
+        const { lat, lng } = JSON.parse(message);
+        if (lat === undefined || lng === undefined) return;
 
-        if (!deviceId || lat === undefined || lng === undefined) return;
-
+        // Upsert the single vehicle location in MongoDB
         await Location.findOneAndUpdate(
-          { deviceId },
+          {}, // always update the first document
           { lat, lng, updatedAt: new Date() },
           { upsert: true, new: true }
         );
@@ -80,7 +79,7 @@ function initWebSocket(server) {
         // Broadcast to all connected clients
         wss.clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ deviceId, lat, lng }));
+            client.send(JSON.stringify({ lat, lng }));
           }
         });
       } catch (err) {
@@ -97,4 +96,6 @@ const server = http.createServer(app);
 initWebSocket(server);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`✅ Server + WS running on port ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`✅ Server + WS running on port ${PORT}`);
+});
