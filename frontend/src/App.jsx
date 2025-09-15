@@ -35,6 +35,8 @@ import CommunityPage from "./pages/CommunityPage";
 import UserCommunityPage from "./pages/UserCommunityPage";
 import GreenChampionForm from "./components/GreenChampionForm";
 import MapPage from "./pages/MapPage";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export default function App() {
   // Profile Page (Protected)
@@ -76,8 +78,8 @@ export default function App() {
   return (
     <Router>
       <ProgressProvider>
-        <Sidebar />
-        <main className="ml-64 flex-1 p-6 bg-gray-50 min-h-screen">
+        <Header />
+        <main className="flex-1 p-6 bg-gray-50 min-h-screen pt-20">
           <Routes>
             {/* Auth Pages */}
             <Route path="/login" element={<Login />} />
@@ -155,6 +157,7 @@ export default function App() {
         </main>
 
         <Chatbot />
+        <Footer />
       </ProgressProvider>
     </Router>
   );

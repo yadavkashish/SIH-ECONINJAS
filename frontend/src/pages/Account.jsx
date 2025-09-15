@@ -12,7 +12,6 @@ const AccountPage = () => {
   const navigate = useNavigate();
 
   const goToGreenChampions = () => {
-    // 👉 You can add conditions/checks here before redirecting
     navigate("/green-champions");
   };
 
@@ -43,18 +42,15 @@ const AccountPage = () => {
     fetchUser();
   }, []);
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login"; // redirect
+    window.location.href = "/login";
   };
 
-  // Handle form input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -93,8 +89,8 @@ const AccountPage = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-      <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6">
+    <div className="flex justify-center bg-gray-100 p-4 min-h-screen">
+      <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6 mt-0">
         {/* Profile Icon */}
         <div className="flex justify-center mb-4">
           <div className="bg-green-100 p-4 rounded-full">
@@ -148,7 +144,6 @@ const AccountPage = () => {
             Edit Profile
           </button>
 
-          {/* Green Champions Option */}
           <button
             onClick={goToGreenChampions}
             className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600 transition"
@@ -157,6 +152,7 @@ const AccountPage = () => {
             Join Green Champions
           </button>
 
+          {/* Uncomment if logout needed */}
           {/* <button
             onClick={handleLogout}
             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
@@ -168,7 +164,7 @@ const AccountPage = () => {
 
       {/* Edit Profile Modal */}
       {editing && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-20">
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md relative">
             <button
               onClick={() => setEditing(false)}
