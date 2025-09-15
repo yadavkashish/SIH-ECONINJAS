@@ -19,6 +19,7 @@ function Tracking() {
   }, []);
 
   return (
+     <div className="pt-8 px-4">   {/* 👈 added wrapper with padding */}
     <MapContainer center={[20, 78]} zoom={5} style={{ height: "500px" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {locations.map((loc) => (
@@ -27,6 +28,7 @@ function Tracking() {
         </Marker>
       ))}
     </MapContainer>
+    </div>
   );
 }
 
